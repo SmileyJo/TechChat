@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TechChat.iml" filepath="$PROJECT_DIR$/TechChat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TechChatClient.iml" filepath="$PROJECT_DIR$/TechChatClient.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
