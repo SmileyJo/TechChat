@@ -1,0 +1,33 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical" >
+
+    <EditText
+        android:layout_width="294dp"
+        android:layout_height="wrap_content"
+        android:hint="TO:" />
+
+    <Button
+        android:layout_width="50pt"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:text="CONTACTS"
+        android:id="@+id/phonebook1" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="top"
+        android:hint="COMPOSE MESSAGE" />
+    <Button
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:gravity="right"
+        android:text="SEND" />
+</LinearLayout>
