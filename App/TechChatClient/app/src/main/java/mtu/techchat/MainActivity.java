@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,20 +14,9 @@ import android.app.Activity;
 import android.widget.Button;
 import android.widget.EditText;
 
+import static android.provider.AlarmClock.EXTRA_MESSAGE;
+
 public class MainActivity extends AppCompatActivity {
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
-
-    /** Called when the user clicks the Send button */
-    public void sendMessage(View view) {
-        // Do something in response to button
-    }
-
 
     /* this override is designed to listen to our
     compose button and open our new "send message" page
@@ -37,30 +27,30 @@ Button Compose;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       Compose = (Button) findViewById(R.id.Compose);
+       Button Compose = (Button) findViewById(R.id.Compose);
         Compose.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void sendMessage(View view){
-                startActivity(new Intent(FromActivity.this, ToActivity.class));
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ComposePage.class));
             }
-        }
-    });
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        });
     }
+
+
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+//    }
 
     /** Called when the user clicks the Send button */
-    public void sendMessage(View view) {
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.edit_message);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
-    }
+//    public void sendMessage(View view) {
+//        Intent intent = new Intent(this, DisplayMessageActivity.class);
+//        EditText editText = (EditText) findViewById(R.id.edit_message);
+//        String message = editText.getText().toString();
+//        intent.putExtra(EXTRA_MESSAGE, message);
+//        startActivity(intent);
+//    }
 }
 
 
@@ -80,7 +70,7 @@ Button Compose;
 //            }
 //        });
 //    }
-
+//
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.

@@ -20,8 +20,6 @@
         </activity>
         <activity android:name=".DisplayMessageActivity" />
         <activity android:name=".ComposePage"></activity>
-        <activity android:name="com.packagename.FromActivity"></activity>
-        <activity android:name="com.packagename.ToActivity"></activity> //works with button listener
     </application>
 
 </manifest>
