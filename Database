@@ -1,0 +1,34 @@
+
+PRAGMA foreign_keys = off;
+BEGIN TRANSACTION;
+
+-- Table: Messages
+CREATE TABLE Messages (
+    Message_ID BIGINT PRIMARY KEY
+                      UNIQUE
+                      NOT NULL,
+    Content    STRING
+);
+
+
+-- Table: Photos
+CREATE TABLE Photos (
+    Photo_ID BIGINT REFERENCES Users (User_ID) 
+                    PRIMARY KEY
+                    NOT NULL
+                    UNIQUE,
+    Size     INT
+);
+
+
+-- Table: Users
+CREATE TABLE Users (
+    User_ID BIGINT PRIMARY KEY
+                   NOT NULL
+                   UNIQUE,
+    Name    STRING NOT NULL
+);
+
+
+COMMIT TRANSACTION;
+PRAGMA foreign_keys = on;
