@@ -20,6 +20,7 @@
             android:name=".Compose"
             android:label="@string/title_activity_compose" >
         </activity>
+        <activity android:name=".phoneBook" />
     </application>
 
 </manifest>

@@ -17,12 +17,22 @@ public class Compose extends Activity {
         setContentView(R.layout.activity_compose);
 
         Button send = (Button) findViewById(R.id.send);
+        Button phonebook = (Button) findViewById(R.id.phonebook);
+
         send.setOnClickListener(new View.OnClickListener() {
             @Override
+
+            //two buttons produce two outcomes
             public void onClick(View v) {
-                //Get Text from Text Box
-                //Send Text to server
+                if (v.getId() == R.id.send) { //"send" button is untouched
+
+                } else if (v.getId() == R.id.phonebook) { //"contacts" button takes you to a listed phonebook
+                    startActivity(new Intent(Compose.this, phoneBook.class));
+                }
             }
+
         });
+
+
     }
 }
