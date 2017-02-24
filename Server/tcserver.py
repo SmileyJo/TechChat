@@ -1,15 +1,16 @@
 #a server socket example in python
+#root@localhost: eteyzgFG5B%k
 
 import socket;
 import sys;
 import mysql.connector
-from thread import *;
+#from thread import *;
 
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
 HOST = '';   # Symbolic name meaning all available interfaces
-PORT = 8888; # Arbitrary non-privileged port
-db = mysql.connector.connect(host='classdb.it.mtu.edu', user='danej', database='danej');
+PORT = 8889; # Arbitrary non-privileged port
+#db = mysql.connector.connect(host='root@localhost', password='eteyzgFG5B%k', database='danej');
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
 print 'Socket created';
@@ -27,20 +28,33 @@ s.listen(10); #tells the socket to start listening and
 print 'Socket now listening';
 end = 1;
 
-def login():
+def status(data):
     #query the db for login info matching
     #the inputted username and pw
-    print("login called\n");
+    print("status called");
 
+def exit(data):
+    #query the db for login info matching
+    #the inputted username and pw
+    print("exit called");
 
+def send(data):
+    #query the db for login info matching
+    #the inputted username and pw
+    print("send called");
 
-
-
-
-
+def recieve(data):
+    #query the db for login info matching
+    #the inputted username and pw
+    print("recieve called");
 
 #language of commands
-commands = {'login' : login};
+commands = {'changestatus' : status #changes status of the user on the database
+            'exit' : exit           #exits from the server and destroys the thread
+                                    #also sets status to offline
+            'sendmessage' : send    #sends a message from the user to another user
+            'recieve' : recieve     #the client asks for all recieved messages
+            };
 
 #Function for handling connections. This will be used to create threads
 def clientthread(conn):
@@ -52,11 +66,16 @@ def clientthread(conn):
          
         #Receiving from client
         data = conn.recv(1024);
-        if(str(data) == "exit\n" or str(data) == "exit"):
+        command = data.split();
+
+        if(command[0] == "exit"):
+            commands[command[0]](command);
             break;
         #need to split data into multiple tolkens
-        print(data);
-        commands[data]();
+        for i in range (0, len(command)):
+            print(command[i]);
+
+        commands[command[0]](command);
      
      
     #came out of loop
