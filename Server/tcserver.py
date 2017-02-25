@@ -62,9 +62,9 @@ commands = {'changestatus' : status #changes status of the user on the database
 def clientthread(conn):
     #Sending message to connected client
     conn.send('Welcome to the server. Type something and hit enter\n'); #send only takes string
-    exit = 0;
+    QQ = 0;
     #infinite loop so that function do not terminate and thread do not end.
-    while exit != 1:
+    while QQ != 1:
          
         #Receiving from client
         data = conn.recv(1024);
