@@ -51,11 +51,11 @@ def recieve(data):
     print("recieve called");
 
 #language of commands
-commands = {'changestatus' : status #changes status of the user on the database
-            'exit' : exit           #exits from the server and destroys the thread
-                                    #also sets status to offline
-            'sendmessage' : send    #sends a message from the user to another user
-            'recieve' : recieve     #the client asks for all recieved messages
+commands = {'changestatus' : status, #changes status of the user on the database
+            'exit' : exit,           #exits from the server and destroys the thread
+                                     #also sets status to offline
+            'sendmessage' : send,    #sends a message from the user to another user
+            'recieve' : recieve,     #the client asks for all recieved messages
             };
 
 #Function for handling connections. This will be used to create threads
