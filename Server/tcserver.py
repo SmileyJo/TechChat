@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #a server socket example in python
 #root@localhost: eteyzgFG5B%k
 
