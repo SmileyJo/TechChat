@@ -5,8 +5,8 @@
 
 import socket;
 import sys;
-import mysql.connector
-#from thread import *;
+#import mysql.connector
+from thread import *;
 
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
