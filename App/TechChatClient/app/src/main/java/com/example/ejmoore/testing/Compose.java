@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 
-public class Compose extends Activity {
+public class Compose extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,22 +17,27 @@ public class Compose extends Activity {
         setContentView(R.layout.activity_compose);
 
         Button send = (Button) findViewById(R.id.send);
+        send.setOnClickListener(this);
+
         Button phonebook = (Button) findViewById(R.id.phonebook);
+        send.setOnClickListener(this);
+    }
 
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
 
-            //two buttons produce two outcomes
-            public void onClick(View v) {
-                if (v.getId() == R.id.send) { //"send" button is untouched
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.send:
+                    //send message to server to be retreived by other person
+                    break;
 
-                } else if (v.getId() == R.id.phonebook) { //"contacts" button takes you to a listed phonebook
+                case R.id.phonebook: //got to phonebook list. for some reason this still does not work.
                     startActivity(new Intent(Compose.this, phoneBook.class));
-                }
-            }
+                    break;
 
-        });
+            }
+        }
 
 
     }
-}
+

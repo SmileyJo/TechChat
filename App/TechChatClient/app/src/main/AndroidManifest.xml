@@ -21,6 +21,7 @@
             android:label="@string/title_activity_compose" >
         </activity>
         <activity android:name=".phoneBook" />
+        <activity android:name=".Settings" />
     </application>
 
 </manifest>
