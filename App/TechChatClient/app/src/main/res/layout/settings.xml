@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <CheckBox
+        android:text="Vibrate Off?"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/OFFVibrate"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="37dp" />
+
+    <CheckBox
+        android:text="Don't Show Message on Receive?"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/OFFVibrate"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/showmessage" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/showmessage"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/autoresponse"
+        android:text="Send Auto Response?" />
+
+    <TextView
+        android:text="Block Settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/blockSET"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"
+        android:layout_marginTop="11dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/msgSET" />
+
+    <TextView
+        android:text="Auto Response: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/autoLABEL"
+        android:textAppearance="@android:style/TextAppearance"
+        android:layout_marginTop="11dp"
+        android:layout_below="@+id/autoresponse"
+        android:layout_toLeftOf="@+id/autoresponseTEXT" />
+
+    <TextView
+        android:text="Delete Messages After:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/deleteLABEL"
+        android:textAppearance="@android:style/TextAppearance"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="18dp" />
+
+    <TextView
+        android:text="Message Settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/msgSET"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"
+        android:layout_above="@+id/deleteLABEL"
+        android:layout_alignLeft="@+id/deleteLABEL"
+        android:layout_marginBottom="14dp" />
+
+    <CheckBox
+        android:text="50 "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/delete1"
+        android:layout_below="@+id/deleteLABEL"
+        android:layout_toLeftOf="@+id/autoresponseTEXT" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/autoresponseTEXT"
+        android:background="@android:color/holo_blue_light"
+        android:layout_below="@+id/autoresponse"
+        android:layout_toRightOf="@+id/blockSET"
+        android:layout_alignBottom="@+id/autoLABEL" />
+
+    <CheckBox
+        android:text="100"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/delete2"
+        android:layout_below="@+id/deleteLABEL"
+        android:layout_centerHorizontal="true" />
+
+    <CheckBox
+        android:text="200"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/delete3"
+        android:layout_alignBaseline="@+id/delete2"
+        android:layout_alignBottom="@+id/delete2"
+        android:layout_toRightOf="@+id/showmessage" />
+</RelativeLayout>

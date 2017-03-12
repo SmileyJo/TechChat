@@ -18,7 +18,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 
-public class Compose extends Activity {
+public class Compose extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,39 +29,46 @@ public class Compose extends Activity {
         StrictMode.setThreadPolicy(policy);
 
         Button send = (Button) findViewById(R.id.send);
+        send.setOnClickListener(this);
+
         Button phonebook = (Button) findViewById(R.id.phonebook);
+        send.setOnClickListener(this);
+    }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.send:
+                //send message to server to be retreived by other person
+                break;
 
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
+            case R.id.phonebook: //got to phonebook list. for some reason this still does not work.
+                startActivity(new Intent(Compose.this, phoneBook.class));
+                break;
 
-            //two buttons produce two outcomes
-            public void onClick(View v) {
-                if (v.getId() == R.id.send) { //"send" button is untouched
-                    int portNumber = 8889;
-                    try {
-                        //System.out.println("Attempting Send");
-                        Socket clientSocket = new Socket("10.0.2.2",portNumber);
-                        DataOutputStream send = new DataOutputStream(clientSocket.getOutputStream());
-                        //BufferedReader recieve = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                        //System.out.println("Actually Sending");
+        }
+    }
 
-                        EditText message = (EditText) findViewById(R.id.Message);
-                        String packet = message.getText().toString();
-                        packet = "Send message:" + "TestID" + ":" + packet;
+    public void sendMessage(View v) {
+            int portNumber = 8889;
+            try {
+                //System.out.println("Attempting Send");
+                Socket clientSocket = new Socket("10.0.2.2",portNumber);
+                DataOutputStream send = new DataOutputStream(clientSocket.getOutputStream());
+                //BufferedReader recieve = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                //System.out.println("Actually Sending");
 
-                        send.writeBytes("");
-                        //System.out.println(clientSocket.isConnected());
-                    } catch(Exception e) {
-                        e.printStackTrace();
-                    }
-                } else if (v.getId() == R.id.phonebook) { //"contacts" button takes you to a listed phonebook
-                    startActivity(new Intent(Compose.this, phoneBook.class));
-                }
+                EditText message = (EditText) findViewById(R.id.Message);
+                String packet = message.getText().toString();
+                packet = "Send message:" + "TestID" + ":" + packet;
+
+                send.writeBytes("");
+                //System.out.println(clientSocket.isConnected());
+            } catch(Exception e) {
+                e.printStackTrace();
             }
-
-        });
+    }
 
 
     }
-}
+
