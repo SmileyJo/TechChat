@@ -60,10 +60,12 @@ public class Compose extends Activity implements View.OnClickListener {
 
                 EditText message = (EditText) findViewById(R.id.Message);
                 String packet = message.getText().toString();
-                packet = "Send message:" + "TestID" + ":" + packet;
+                packet = "Send message:" + "TestFromID" + ":" + packet;
 
                 System.out.println("Sending: " + packet);
                 send.writeBytes(packet);
+
+                message.setText("");
             } catch(Exception e) {
                 e.printStackTrace();
             }
