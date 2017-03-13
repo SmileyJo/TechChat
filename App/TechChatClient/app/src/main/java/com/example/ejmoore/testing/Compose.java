@@ -22,6 +22,8 @@ public class Compose extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("Compose Page Reached");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose);
 
@@ -39,7 +41,7 @@ public class Compose extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.send:
-                //send message to server to be retreived by other person
+                sendMessage();
                 break;
 
             case R.id.phonebook: //got to phonebook list. for some reason this still does not work.
@@ -49,21 +51,19 @@ public class Compose extends Activity implements View.OnClickListener {
         }
     }
 
-    public void sendMessage(View v) {
+    public void sendMessage() {
             int portNumber = 8889;
             try {
-                //System.out.println("Attempting Send");
+                System.out.println("Creating new Socket");
                 Socket clientSocket = new Socket("10.0.2.2",portNumber);
                 DataOutputStream send = new DataOutputStream(clientSocket.getOutputStream());
-                //BufferedReader recieve = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                //System.out.println("Actually Sending");
 
                 EditText message = (EditText) findViewById(R.id.Message);
                 String packet = message.getText().toString();
                 packet = "Send message:" + "TestID" + ":" + packet;
 
-                send.writeBytes("");
-                //System.out.println(clientSocket.isConnected());
+                System.out.println("Sending: " + packet);
+                send.writeBytes(packet);
             } catch(Exception e) {
                 e.printStackTrace();
             }
