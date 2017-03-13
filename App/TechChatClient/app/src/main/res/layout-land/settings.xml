@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <CheckBox
+        android:text="Vibrate Off?"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/OFFVibrate"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="37dp" />
+
+    <TextView
+        android:text="Block Settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/blockSET"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:text="Don't Show Message on Receive?"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/showmessage"
+        android:layout_below="@+id/OFFVibrate"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/autoresponse"
+        android:text="Send Auto Response?"
+        android:layout_below="@+id/showmessage"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="Auto Response: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/autoLABEL"
+        android:textAppearance="@android:style/TextAppearance"
+        android:layout_marginEnd="19dp"
+        android:layout_below="@+id/autoresponse"
+        android:layout_alignEnd="@+id/autoresponse" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/autoresponseTEXT"
+        android:background="@android:color/holo_blue_light"
+        android:layout_below="@+id/autoLABEL"
+        android:layout_alignStart="@+id/autoLABEL"
+        android:layout_marginTop="15dp" />
+
+    <CheckBox
+        android:text="50 "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/delete1"
+        android:layout_alignBaseline="@+id/delete2"
+        android:layout_alignBottom="@+id/delete2"
+        android:layout_toEndOf="@+id/autoresponseTEXT"
+        android:layout_marginStart="45dp" />
+
+    <TextView
+        android:text="Delete Messages After:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/deleteLABEL"
+        android:textAppearance="@android:style/TextAppearance"
+        android:layout_marginLeft="18dp"
+        android:layout_alignTop="@+id/OFFVibrate"
+        android:layout_alignEnd="@+id/msgSET" />
+
+    <TextView
+        android:text="Message Settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/msgSET"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/delete1" />
+
+    <CheckBox
+        android:text="100"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/delete2"
+        android:layout_marginStart="21dp"
+        android:layout_alignBaseline="@+id/showmessage"
+        android:layout_alignBottom="@+id/showmessage"
+        android:layout_toEndOf="@+id/delete1" />
+
+    <CheckBox
+        android:text="200"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/delete3"
+        android:layout_marginStart="19dp"
+        android:layout_alignBaseline="@+id/delete2"
+        android:layout_alignBottom="@+id/delete2"
+        android:layout_toEndOf="@+id/delete2" />
+</RelativeLayout>
