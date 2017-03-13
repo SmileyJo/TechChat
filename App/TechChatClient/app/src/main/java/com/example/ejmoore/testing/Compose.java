@@ -19,8 +19,8 @@ public class Compose extends Activity implements View.OnClickListener {
         Button send = (Button) findViewById(R.id.send);
         send.setOnClickListener(this);
 
-        Button phonebook = (Button) findViewById(R.id.phonebook);
-        send.setOnClickListener(this);
+        Button phoneBook = (Button) findViewById(R.id.phonebook);
+        phoneBook.setOnClickListener(this);
     }
 
 
