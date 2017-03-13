@@ -5,7 +5,7 @@
 
 import socket;
 import sys;
-#import mysql.connector
+import sqlite3;
 from thread import *;
 
 #right now its hosted on local host, so on a tech ip, it should
