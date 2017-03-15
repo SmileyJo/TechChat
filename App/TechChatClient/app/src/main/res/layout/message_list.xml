@@ -6,7 +6,8 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="397dp"
-        style="@android:style/Widget.DeviceDefault.Light.ExpandableListView.White" />
+        style="@android:style/Widget.DeviceDefault.Light.ExpandableListView.White"
+        android:id="@+id/textout" />
 
     <EditText
         android:layout_width="match_parent"
