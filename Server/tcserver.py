@@ -11,7 +11,7 @@ from thread import *;
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
 HOST = '';   # Symbolic name meaning all available interfaces
-PORT = 8889; # Arbitrary non-privileged port
+PORT = 8887; # Arbitrary non-privileged port
 #db = mysql.connector.connect(host='root@localhost', password='eteyzgFG5B%k', database='danej');
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
@@ -30,58 +30,68 @@ s.listen(10); #tells the socket to start listening and
 print 'Socket now listening';
 end = 1;
 
-def status(data):
+def status(data, c):
     #query the db for login info matching
     #the inputted username and pw
     print("status called");
 
-def exit(data):
+def exit(data, c):
     #query the db for login info matching
     #the inputted username and pw
     print("exit called");
 
-def send(data):
+def send(data, c):
     #query the db for login info matching
     #the inputted username and pw
+    if(len(data) != 4):
+        conn.send('Illegal Argument Exception: 4 arguments expected');
     print("send called");
+    #sender, reciever, message
+    c.execute('call sendmessage("' + data[1] + '". "' + data[2] + '", "' + data[3] + '")');
 
-def recieve(data):
+def recieve(data, c):
     #query the db for login info matching
     #the inputted username and pw
     print("recieve called");
 
+
 #language of commands
-commands = {'changestatus' : status, #changes status of the user on the database
+commands = {'Change Status' : status, #changes status of the user on the database
             'exit' : exit,           #exits from the server and destroys the thread
                                      #also sets status to offline
-            'sendmessage' : send,    #sends a message from the user to another user
-            'recieve' : recieve,     #the client asks for all recieved messages
+            'Send Message' : send,    #sends a message from the user to another user
+            'Message Request' : recieve,     #the client asks for all recieved messages
             };
 
 #Function for handling connections. This will be used to create threads
 def clientthread(conn):
     #Sending message to connected client
     conn.send('Welcome to the server. Type something and hit enter\n'); #send only takes string
+    database = sqlite3.connect('database');
+    c = database.cursor();
     QQ = 0;
+
     #infinite loop so that function do not terminate and thread do not end.
     while QQ != 1:
          
         #Receiving from client
         data = conn.recv(1024);
-        command = data.split();
+        command = data.split(':');
 
         if(command[0] == "exit"):
             commands[command[0]](command);
+            QQ = 1;
             break;
         #need to split data into multiple tolkens
         for i in range (0, len(command)):
             print(command[i]);
 
-        commands[command[0]](command);
+        commands[command[0]](command, c);
      
      
     #came out of loop
     conn.close();
+    c.close();
     
 #now keep talking with the client
 while (end == 1):
@@ -93,4 +103,5 @@ while (end == 1):
     start_new_thread(clientthread ,(conn,));
  
 s.close()
-
+c.close();
+database.close();
