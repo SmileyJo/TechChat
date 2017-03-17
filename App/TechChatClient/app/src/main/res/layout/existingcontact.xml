@@ -6,11 +6,22 @@
     //conect the listveiw of this interface to the database
 
     <ListView
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:id="@+id/contactList"
         android:clickable="true"
-        android:fadeScrollbars="false" />
+        android:fadeScrollbars="false"
+        android:focusable="true"
+        android:longClickable="false"
+        android:layout_width="500px" />
+
+    <Button
+        android:text="message list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="17dp"
+        android:layout_marginTop="22dp"
+        android:id="@+id/message_list" />
 </RelativeLayout>
