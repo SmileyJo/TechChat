@@ -52,23 +52,13 @@ public class Compose extends Activity implements View.OnClickListener {
     }
 
     public void sendMessage() {
-            int portNumber = 8889;
-            try {
-                System.out.println("Creating new Socket");
-                Socket clientSocket = new Socket("10.0.2.2",portNumber);
-                DataOutputStream send = new DataOutputStream(clientSocket.getOutputStream());
 
-                EditText message = (EditText) findViewById(R.id.Message);
-                String packet = message.getText().toString();
-                packet = "Send message:" + "TestFromID" + ":" + packet;
+            EditText message = (EditText) findViewById(R.id.Message);
+            String packet = message.getText().toString();
 
-                System.out.println("Sending: " + packet);
-                send.writeBytes(packet);
+            MainActivity.user.sendMessage(packet);
 
-                message.setText("");
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
+            message.setText("");
     }
 
 

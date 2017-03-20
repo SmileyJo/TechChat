@@ -11,6 +11,8 @@ import android.widget.Button;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
+    public static User user = new User();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
