@@ -1,18 +1,25 @@
 #!/usr/bin/env python
 
-#a server socket example in python
 #root@localhost: eteyzgFG5B%k
 
 import socket;
 import sys;
 import sqlite3;
+import threading;
 from thread import *;
 
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
 HOST = '';   # Symbolic name meaning all available interfaces
 PORT = 8887; # Arbitrary non-privileged port
-#db = mysql.connector.connect(host='root@localhost', password='eteyzgFG5B%k', database='danej');
+
+#database semaphores
+converLock  =   BoundedSemaphore(1);    #allows only 1 thread to use the table at any given time
+userLock    =   BoundedSemaphore(1);    #allows only 1 thread to use the table at any given time
+replyLock   =   BoundedSemaphore(1);    #allows only 1 thread to use the table at any given time
+delLock     =   BoundedSemaphore(1);    #allows only 1 thread to use the table at any given time
+
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
 print 'Socket created';
@@ -46,21 +53,69 @@ def send(data, c):
     if(len(data) != 4):
         conn.send('Illegal Argument Exception: 4 arguments expected');
     print("send called");
-    #sender, reciever, message
-    c.execute('call sendmessage("' + data[1] + '". "' + data[2] + '", "' + data[3] + '")');
+    #we need to write the procedure for the server to execute
+    #because sqlite3 doesn't support procedures
+    sender = data[1];
+    reciever = data[2];
+    msg = data[3];
+
+    #user table cs is different
+    #to keep user table unlocked
+    userLock.aquire(true,);
+    senderR = c.execute('select * from Users where Username='+sender+';');
+    recieverR = c.execute('select * from Users where Username='+reciever+';');
+    userLock.release();
+    
+    #c_ID  INTEGER      PRIMARY KEY
+    #                   NOT NULL,
+    #u_One INT (11)     NOT NULL
+    #                   REFERENCES Users (User_ID),
+    #u_Two INT (11)     REFERENCES Users (User_ID) 
+    #                   NOT NULL,
+    #time  INT (11)     DEFAULT NULL,
+    #ip    VARCHAR (30) DEFAULT NULL
+
+    #critical section
+    replyLock.aquire(true,);
+    converLock.aquire(true,);
+    
+    conversations = c.execute('select * from Conversation where (u_One=' + senderR[0].User_ID
+        + ' and u_Two=' + recieverR[0].User_ID + ') or (u_One=' + reciever + ' and u_Two='+sender+');');
+    #multiple conversations found, throw an error
+    if(len(conversations > 1)):
+        print('Unexpected return value from Comversation table');
+    #no conversations found, add a new conversation and then insert relpy
+    elif(len(conversations == 0)):
+        c.execute('insert into Conversation(u_One, u_Two) values('+senderR[0].User_ID+', '+recieverR[0].User_ID + ');');
+        conversations = c.execute('select * from Conversation where (u_One=' + senderR[0].User_ID
+            + ' and u_Two=' + recieverR[0].User_ID + ') or (u_One=' + reciever + ' and u_Two='+sender+');');
+        conver = conversations[0].c_ID;
+        c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+conver+', '+senderR[0].User_ID+', '+msg+');');
+    #one conversation found, insert reply
+    else:
+        conver = conversations[0].c_ID;
+        c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+conver+', '+senderR[0].User_ID+', '+msg+');');
+    
+    replyLock.release();
+    converLock.release();
+    #end critical section
 
 def recieve(data, c):
     #query the db for login info matching
     #the inputted username and pw
     print("recieve called");
 
+def new_user(data, c):
+    print("new_user called");
+
 
 #language of commands
-commands = {'Change Status' : status, #changes status of the user on the database
-            'exit' : exit,           #exits from the server and destroys the thread
-                                     #also sets status to offline
-            'Send Message' : send,    #sends a message from the user to another user
-            'Message Request' : recieve,     #the client asks for all recieved messages
+commands = {'Change Status'     : status,           #changes status of the user on the database
+            'exit'              : exit,                      #exits from the server and destroys the thread
+                                                    #also sets status to offline
+            'Send Message'      : send,             #sends a message from the user to another user
+            'Message Request'   : recieve,        #the client asks for all recieved messages
+            'add user'          : new_user
             };
 
 #Function for handling connections. This will be used to create threads
@@ -92,6 +147,7 @@ def clientthread(conn):
     #came out of loop
     conn.close();
     c.close();
+    database.close();
     
 #now keep talking with the client
 while (end == 1):
@@ -103,5 +159,3 @@ while (end == 1):
     start_new_thread(clientthread ,(conn,));
  
 s.close()
-c.close();
-database.close();
