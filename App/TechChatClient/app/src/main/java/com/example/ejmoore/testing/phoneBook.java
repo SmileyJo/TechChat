@@ -32,7 +32,7 @@ public class phoneBook extends Activity implements View.OnClickListener{
             switch(v.getId()) {
 
                 case R.id.compose:
-                    startActivity(new Intent(phoneBook.this, messageList.class));
+                    startActivity(new Intent(phoneBook.this, Compose.class));
                     break;
             }
 
