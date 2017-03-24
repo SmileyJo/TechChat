@@ -4,23 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.telecom.Connection;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
+import java.io.OptionalDataException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,20 +20,13 @@ import java.util.List;
 
 public class Compose extends Activity implements View.OnClickListener {
 
-    ArrayList<String> input_messages = new ArrayList<String>();
+    private ArrayList<String> input_messages = new ArrayList<String>();
+    private ArrayAdapter<String> adapter;
+    private Connection serverConnect;
+    EditText type1 = null;  //these are made global variables for the purpose of calling them in multiple methods
+    String packet = "";
 
 
-//    protected void addMessage(String in){
-//        //input from send bar is added to array
-//            input_messages.add(in);
-//
-//        //incoming input from contact is added to array
-//
-//        //delete message based on settings
-//
-//        //pull from client
-//
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,29 +46,46 @@ public class Compose extends Activity implements View.OnClickListener {
 
         EditText user = (EditText) findViewById(R.id.username);
 
-        input_messages.add("bbbbbbb");
-        input_messages.add("aaaaaaaa");
-        input_messages.add("ccccccccc");
+        type1 = (EditText) findViewById(R.id.type);  //sets the global variables
+        packet = type1.getText().toString();
 
-        ListView messagelist = (ListView) findViewById(R.id.messages);
+        ListView messagelist = (ListView) findViewById(R.id.messages);  //establishes the list veiw
 
-//        for(int i=0; i< input_messages.size(); i++){
-//            messagelist.(input_messages.get(i));
-//        }
+        System.out.println("after listview but before arrayadapter");
+        //indicates the list veiw can pull from the arraylist input_messages
+        adapter = new ArrayAdapter<String>(Compose.this, android.R.layout.simple_list_item_1, input_messages);
+        messagelist.setAdapter(adapter);
+
+
+//          Thread connectThread = new Thread(new Runnable() { //is supposed to connect to the server.
+//              public void run() {
+//                  serverConnect = new Connection(Compose.this);  //is supposed to connect you to the established server
+//                  serverConnect.run();  //runs the connection
+//
+//              }
+//                      });
+//        connectThread.start();
+
     }
+
+    //adds the string to the input message and notifies the array adapter for list of change.
+    public void displayMessage(String string){
+        System.out.println("add message to array");
+        input_messages.add(string);
+        adapter.notifyDataSetChanged();
+    }
+    
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.send:
-                //sends message encased in text box.
+                System.out.println("start send");
                 //puts message from textbox into top or bottom of list veiw
-                // read text input from message field
+                displayMessage(packet);
 
+                //sends message encased in text box.
                 sendMessage();
-//                EditText YOU = (EditText)findViewById(R.id.Message);
-//                String yourmessage = YOU.getText().toString();
-//                addMessage(yourmessage); //add message to arraylist
 
                 break;
 
@@ -103,52 +105,24 @@ public class Compose extends Activity implements View.OnClickListener {
             Socket clientSocket = new Socket("10.0.2.2", portNumber);
             DataOutputStream send = new DataOutputStream(clientSocket.getOutputStream());
 
-            EditText message = (EditText) findViewById(R.id.Message);
-            String packet = message.getText().toString();
             packet = "Send message:" + "TestFromID" + ":" + packet;
+            //made packet global for the sake of using it in other methods
 
             System.out.println("Sending: " + packet);
             send.writeBytes(packet);
 
-            message.setText("");
+
+            type1.setText("");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private class listAdapter extends ArrayAdapter<String> {
 
-        private int layout;
 
-        private listAdapter(Context context, int resource, List<String> objects) {
-            super(context, resource, objects);
-        }
-    }
 }
 
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent){
-//
-//            ViewFolder mainViewFolder = null;
-//            if(convertView==null){
-//                LayoutInflater inflater = LayoutInflater.from(getContext());
-//                convertView = inflater.inflate(layout, parent, false);
-//                ViewFolder viewfolder = new ViewFolder();
-//                viewfolder.usermessage = (TextView) convertView.findViewById(R.id.Message);
-//            }
-//            else{
-//                mainViewFolder = (ViewFolder) convertView.getTag();
-//                mainViewFolder.usermessage.setText(getItem(position));
-//
-//            }
-//            return super.getView(position, convertView, parent);
-//        }
-//    }
 
-
-//    public class ViewFolder{
-//        TextView usermessage;
-//    }
 
 
 
