@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.telecom.Connection;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -22,7 +21,6 @@ public class Compose extends Activity implements View.OnClickListener {
 
     private ArrayList<String> input_messages = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
-    private Connection serverConnect;
     EditText type1 = null;  //these are made global variables for the purpose of calling them in multiple methods
     String packet = "";
 
