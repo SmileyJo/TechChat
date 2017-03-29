@@ -9,15 +9,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.ejmoore.testing.HomePage">
 
-    <Button
-        android:id="@+id/loginOrRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/editPassword"
-        android:layout_marginTop="20dp"
-        android:text="sign in or register" />
-
     <TextView
         android:id="@+id/username_text"
         android:layout_width="wrap_content"
@@ -57,4 +48,12 @@
         android:id="@+id/editPassword"
         android:layout_below="@+id/password_text"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/loginOrRegister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="sign in or register"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true" />
 </RelativeLayout>
