@@ -1,5 +1,6 @@
 package com.example.ejmoore.testing;
 
+import android.os.AsyncTask;
 import android.widget.EditText;
 
 import java.io.DataInput;
@@ -13,14 +14,15 @@ import java.util.ArrayList;
  * Created by ejmoore on 3/17/17.
  */
 
-public class User {
-    String id;
-    String ip = "10.2.2.2";
-    ArrayList<String> messages;
-    Socket clientSocket;
-    int portNumber = 8889;
+public class User extends AsyncTask{
+    static String id;
+    static String ip = "10.2.2.2";
+    static ArrayList<String> messages;
+    static int portNumber = 8889;
+    static Socket clientSocket;
 
-    public void User(String uId) {
+
+    public static void setupUser() {
 
         messages = new ArrayList<String>();
         try {
@@ -30,7 +32,7 @@ public class User {
         }
     }
 
-    public boolean checkSocket() {
+    public static boolean checkSocket() {
         if (clientSocket.isConnected()) {
             return true;
         }
@@ -47,7 +49,7 @@ public class User {
             return false;
     }
 
-    public void updateMessages() {
+    public static void updateMessages() {
 
         try {
             if (!checkSocket()) {
@@ -78,7 +80,7 @@ public class User {
         return messages;
     }
 
-    public void sendMessage(String message) {
+    public static void sendMessage(String message) {
         try {
             if (!checkSocket()) {
                 System.out.println("Failure Openning Socket");
@@ -92,5 +94,10 @@ public class User {
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected Object doInBackground(Object[] params) {
+        return null;
     }
 }

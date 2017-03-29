@@ -18,12 +18,11 @@ import java.util.List;
 
 
 public class MainActivity extends Activity implements View.OnClickListener {
-
-    public static User user = new User("Test");
     private ArrayList<String> data = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //User.setupUser();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
