@@ -13,6 +13,22 @@ CREATE TABLE Conversation (
     ip    VARCHAR (30) DEFAULT NULL
 );
 
+-- Table: Message
+-- I don't personally think that reply should
+-- be used used for messages, but for the auto
+-- response later (-dane)
+CREATE TABLE Message(
+	id	int(11) 	NOT NULL
+				AUTO_INCREMENT
+				PRIMARY KEY,
+	U_From	int(11)		not NULL 
+				references Users(u_id),
+	U_To	int(11) 	not NULL 
+				References Users(u_id),
+	content	varchar(255) 	not NULL
+);
+
+
 
 -- Table: Deleted_Users_Log
 CREATE TABLE Deleted_Users_Log (
@@ -50,16 +66,8 @@ CREATE TABLE Users (
 );
 
 
--- Trigger: User_Add
-CREATE TRIGGER User_Add
-         AFTER INSERT
-            ON Users
-      FOR EACH ROW
-BEGIN
-    INSERT INTO Users VALUES (
-                          Old.main
-                      );
-END;
+-- Triggee: Update Message Table
+-- TODO
 
 
 -- Trigger: User_Delete
