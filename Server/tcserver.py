@@ -5,20 +5,19 @@
 import socket;
 import sys;
 import sqlite3;
-import threading;
+import time;
+from threading import Lock;
 from thread import *;
 
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
 HOST = '';   # Symbolic name meaning all available interfaces
-PORT = 8887; # Arbitrary non-privileged port
-
+PORT = 8889; # Arbitrary non-privileged port
+true = True;
+false = False;
 #database semaphores
-converLock  =   BoundedSemaphore(1);    #allows only 1 thread to use the table at any given time
-userLock    =   BoundedSemaphore(1);    #allows only 1 thread to use the table at any given time
-replyLock   =   BoundedSemaphore(1);    #allows only 1 thread to use the table at any given time
-delLock     =   BoundedSemaphore(1);    #allows only 1 thread to use the table at any given time
-
+dbLock  =   Lock();    #allows only 1 thread to use the database at any given time
+debug = true;
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
@@ -48,6 +47,7 @@ def exit(data, c):
     print("exit called");
 
 def send(data, c):
+
     #query the db for login info matching
     #the inputted username and pw
     if(len(data) != 4):
@@ -61,10 +61,10 @@ def send(data, c):
 
     #user table cs is different
     #to keep user table unlocked
-    userLock.aquire(true,);
-    senderR = c.execute('select * from Users where Username='+sender+';');
-    recieverR = c.execute('select * from Users where Username='+reciever+';');
-    userLock.release();
+    dbLock.acquire(true);
+    #"select * from people where name_last=:who and age=:age", {"who": who, "age": age}
+    senderR = c.execute('select * from Users where Username="'+sender+'";').fetchall();
+    recieverR = c.execute('select * from Users where Username="'+reciever+'";').fetchall();
     
     #c_ID  INTEGER      PRIMARY KEY
     #                   NOT NULL,
@@ -76,11 +76,9 @@ def send(data, c):
     #ip    VARCHAR (30) DEFAULT NULL
 
     #critical section
-    replyLock.aquire(true,);
-    converLock.aquire(true,);
     
     conversations = c.execute('select * from Conversation where (u_One=' + senderR[0].User_ID
-        + ' and u_Two=' + recieverR[0].User_ID + ') or (u_One=' + reciever + ' and u_Two='+sender+');');
+        + ' and u_Two=' + recieverR[0].User_ID + ') or (u_One=' + recieverR[0].User_ID + ' and u_Two='+senderR[0].User_ID+');').fetchall();
     #multiple conversations found, throw an error
     if(len(conversations > 1)):
         print('Unexpected return value from Comversation table');
@@ -88,24 +86,28 @@ def send(data, c):
     elif(len(conversations == 0)):
         c.execute('insert into Conversation(u_One, u_Two) values('+senderR[0].User_ID+', '+recieverR[0].User_ID + ');');
         conversations = c.execute('select * from Conversation where (u_One=' + senderR[0].User_ID
-            + ' and u_Two=' + recieverR[0].User_ID + ') or (u_One=' + reciever + ' and u_Two='+sender+');');
+            + ' and u_Two=' + recieverR[0].User_ID + ') or (u_One=' + recieverR[0].User_ID + ' and u_Two='+sender[0].User_ID+');').fetchall();
         conver = conversations[0].c_ID;
-        c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+conver+', '+senderR[0].User_ID+', '+msg+');');
+        c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+conver+', '+senderR[0].User_ID+', "'+msg+'"");');
     #one conversation found, insert reply
     else:
         conver = conversations[0].c_ID;
-        c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+conver+', '+senderR[0].User_ID+', '+msg+');');
+        c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+conver+', '+senderR[0].User_ID+', "'+msg+'"");');
     
-    replyLock.release();
-    converLock.release();
+    dbLock.release();
     #end critical section
 
 def recieve(data, c):
     #query the db for login info matching
     #the inputted username and pw
+    #Message Request
+    #using test user
     print("recieve called");
 
+
 def new_user(data, c):
+    #create a new user
+    #add user;username;password
     print("new_user called");
 
 
@@ -115,7 +117,7 @@ commands = {'Change Status'     : status,           #changes status of the user 
                                                     #also sets status to offline
             'Send Message'      : send,             #sends a message from the user to another user
             'Message Request'   : recieve,        #the client asks for all recieved messages
-            'add user'          : new_user
+            'Add User'          : new_user
             };
 
 #Function for handling connections. This will be used to create threads
@@ -148,7 +150,27 @@ def clientthread(conn):
     conn.close();
     c.close();
     database.close();
-    
+
+def debugthread():
+    print('debug mode on\n');
+    database = sqlite3.connect('database');
+    c = database.cursor();
+    try:
+        data = c.execute('select * from Users');
+        print(data.fetchall());
+    except sqlite3.Error, msg:
+        print('error in the database');
+        print(msg);
+    c.close();
+    database.close();
+
+if(False):
+    print('starting debug mode\n')
+    db1 = start_new_thread(debugthread, ());
+    end = 0;
+    time.sleep(5);
+
+
 #now keep talking with the client
 while (end == 1):
     #wait to accept a connection - blocking call
