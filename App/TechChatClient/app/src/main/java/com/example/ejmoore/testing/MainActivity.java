@@ -31,12 +31,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         switch (v.getId()) { //allows the switching of jobs based on id of button
             case R.id.loginOrRegister:
-                if(username.getText().toString().equals("username") &&
+                
+                startActivity(new Intent(MainActivity.this, HomePage.class));
+                
+                /*if(username.getText().toString().equals("username") &&
                         password.getText().toString().equals("password")) {
                     startActivity(new Intent(MainActivity.this, HomePage.class));
                 } else {
                     Toast.makeText(getApplicationContext(), "Wrong username or password. try 'username' and 'password'", Toast.LENGTH_SHORT).show();
-                }
+                }*/
                 break;
         }
     }
