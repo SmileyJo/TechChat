@@ -12,7 +12,7 @@ from thread import *;
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
 HOST = '';   # Symbolic name meaning all available interfaces
-PORT = 8878; # Arbitrary non-privileged port
+PORT = 8870; # Arbitrary non-privileged port
 true = True;
 false = False;
 #database semaphores
@@ -41,14 +41,13 @@ def status(data, db):
     #the inputted username and pw
     print("status called");
     c = db.cursor();
-    return NULL;
+    return None;
 
 def exit(data, db):
     #query the db for login info matching
     #the inputted username and pw
     print("exit called");
-    c = db.cursor();
-    return NULL;
+    return None;
 
 def send(data, db):
     c = db.cursor();
@@ -100,50 +99,63 @@ def send(data, db):
     
     db.commit();
     dbLock.release();
-    return NULL;
+    return None;
     #end critical section
 
 def recieve(data, db):
     #query the db for login info matching
     #the inputted username and pw
-    #Message Request:user
+    #input format:  Message Request:user
     #using test user
     #return format:     sender:reciever:message
     print("recieve called");
-    dbLock.acquire(true);
-    c = db.cursor();
-    response = {};
-    user = data[1]; #eventually will be replaced with an argument from data
-    #get all conversations this user is in
-    uid = c.execute("select User_ID from Users where Username="+user+";").fetchall()[0][0];
-    conversations = c.execute("select c_ID, u_One, u_Two from Conversation where"
-                            + "u_One="+str(uid)+' or u_Two='+str(uid)+";").fetchall();
-    strings = 0;#size of response array
-    for i in range (0, len(conversations)):
-        #get all messages in a given conversation
-        msgs = c.execute("select reply,user_fk_ID from Reply where c_ID="+str(conversations[i][0])).fetchall();
-        for j in range (0, len(msgs)):
-            #get sender id and reciever id
-            senderid = msgs[i][1];
-            msg = msgs[i][0];
-            recieverid = 0;
-            if(senderid != uid):
-                recieverid = uid;
-            else:
-                if(conversations[i][1] != uid):
-                    recieverid = conversations[i][1];
+    try:
+        dbLock.acquire(true);
+        c = db.cursor();
+        print(c.execute('select User_ID from Users where Username="chicken"').fetchall());
+        response = {};
+        user = data[1].strip(); #eventually will be replaced with an argument from data
+        #get all conversations this user is in
+        cmd = 'select User_ID from Users where Username="{}"'.format(user);
+        luid = c.execute(cmd);
+        uid = luid.fetchall()[0][0];
+        cmd = "select c_ID, u_One, u_Two from Conversation where u_One={} or u_Two={}".format(str(uid),str(uid));
+        conversations = c.execute(cmd).fetchall();
+        strings = 0;#size of response array
+        for i in range (0, len(conversations)):
+            #get all messages in a given conversation
+            cmd = "select reply,user_fk_ID from Reply where c_fk_ID={}".format(str(conversations[i][0]));
+            msgs = c.execute(cmd).fetchall();
+            print(str(msgs));
+            for j in range (0, len(msgs)):
+                #get sender id and reciever id
+                senderid = msgs[j][1];
+                msg = msgs[j][0];
+                recieverid = 0;
+                if(senderid != uid):
+                    recieverid = uid;
                 else:
-                    recieverid = conversations[i][2];
+                    if(conversations[i][1] != uid):
+                        recieverid = conversations[i][1];
+                    else:
+                        recieverid = conversations[i][2];
 
-            #get user names
-            sender = c.execute("select Username from Users where User_ID="+str(senderid)+";").fetchall()[0][0];
-            reciever = c.execute("select Username from Users where User_ID="+str(recieverid)+";").fetchall()[0][0];
+                #get user names
+                cmd = "select Username from Users where User_ID={}".format(str(senderid));
+                sender = c.execute(cmd).fetchall()[0][0];
+                cmd = "select Username from Users where User_ID={}".format(str(recieverid));
+                reciever = c.execute(cmd).fetchall()[0][0];
 
-            #add message to the response array
-            response[strings++] = "{}:{}:{}".format(sender,reciever,msg);
+                #add message to the response array
+                response[strings] = "{}:{}:{}\n".format(sender,reciever,msg);
+                strings=strings+1;
 
-    dbLock.release();
-    return response;
+        dbLock.release();
+        return response;
+    except Error,msg:
+        print(msg);
+        dbLock.realease();
+
 
 
 def new_user(data, db):
@@ -165,7 +177,7 @@ commands = {'Change Status'     : status,           #changes status of the user 
 #Function for handling connections. This will be used to create threads
 def clientthread(conn):
     #Sending message to connected client
-    conn.send('Welcome to the server. Type something and hit enter\n'); #send only takes string
+    #conn.send('Welcome to the server. Type something and hit enter\n'); #send only takes string
     database = sqlite3.connect('database.db');
     QQ = 0;
 
@@ -177,7 +189,6 @@ def clientthread(conn):
         command = data.split(':');
 
         if(command[0].strip() == "exit"):
-            commands[command[0]](command);
             QQ = 1;
             break;
         #need to split data into multiple tolkens
@@ -185,9 +196,9 @@ def clientthread(conn):
             print(command[i]);
 
         response = commands[command[0].strip()](command, database);
-
-        for i in range (0, len(response)):
-            conn.send(response[i]);
+        if(response != None):
+            for i in range (0, len(response)):
+                conn.send(response[i].encode('utf-8'));
      
     #came out of loop
     conn.close();
@@ -198,12 +209,9 @@ def debugthread():
     database = sqlite3.connect('database.db');
     c = database.cursor();
     try:
-        data = c.execute('select * from Users');
+             # c.execute('select User_ID from Users where Username="chicken";')
+        data = c.execute('select User_ID from Users where Username="chicken"');
         print(data.fetchall());
-        c.execute('insert into Users(Username, Password, Email) values("danej","danej","danej@mtu.edu");');
-        data = c.execute('select * from Users');
-        print(data.fetchall());
-        database.commit();
     except sqlite3.Error, msg:
         print('error in the database');
         print(msg);
