@@ -1,6 +1,6 @@
 def new_user(data, db):
 	if(len(data) != 4):
-       conn.send('Illegal Argument Exception: 3 arguments expected');
+       conn.send('Illegal Argument Exception: 4 arguments expected');
 
 	c = db.cursor();
 	email = data[1].strip();
@@ -9,8 +9,9 @@ def new_user(data, db):
 	status = 0; #default status to online
 	
 	dbLock.acquire(true,);
-	userLock.acquire(true,);
 	c.execute('insert into Users(Username, Password, Email, Status) values('+username+','+password+','+email+','+status+');');
-	userLock.release();
+	except IntegrityError as e:
+		if 'Unique Constraint' in e.message:
+			print('Username is already in use');
 	dbLock.release();
     print("new_user called");
