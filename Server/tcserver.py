@@ -6,23 +6,25 @@ import socket;
 import sys;
 import sqlite3;
 import time;
+import signal;
 from threading import Lock;
 from thread import *;
+
+
 
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
 HOST = '';   # Symbolic name meaning all available interfaces
-PORT = 8870; # Arbitrary non-privileged port
+PORT = 8884; # Arbitrary non-privileged port
 true = True;
 false = False;
 #database semaphores
-dbLock  =   Lock();    #allows only 1 thread to use the database at any given time
-debug = true;
+dbLock  =   Lock();    #allows only 1 thread to use the database at any given time=
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
 print 'Socket created';
- 
+
 try:
     s.bind((HOST, PORT));
 except socket.error , msg:
@@ -31,22 +33,27 @@ except socket.error , msg:
      
 print 'Socket bind complete';
 
-s.listen(10); #tells the socket to start listening and
-			  #specifies the queue for incomming communications
-print 'Socket now listening';
+
 end = 1;
+
+
+
+def dieQuietly(_signo, _stackframe):
+    print("Sigterm Caught");
+    s.close();
+    sys.exit(0);
+
+signal.signal(signal.SIGTERM, dieQuietly);
 
 def status(data, db):
     #query the db for login info matching
     #the inputted username and pw
-    print("status called");
     c = db.cursor();
     return None;
 
 def exit(data, db):
     #query the db for login info matching
     #the inputted username and pw
-    print("exit called");
     return None;
 
 def send(data, db):
@@ -55,7 +62,6 @@ def send(data, db):
     #the inputted username and pw
     if(len(data) != 4):
         conn.send('Illegal Argument Exception: 4 arguments expected');
-    print("send called");
     #we need to write the procedure for the server to execute
     #because sqlite3 doesn't support procedures
     sender = data[1].strip();
@@ -108,7 +114,6 @@ def recieve(data, db):
     #input format:  Message Request:user
     #using test user
     #return format:     sender:reciever:message
-    print("recieve called");
     try:
         dbLock.acquire(true);
         c = db.cursor();
@@ -161,17 +166,29 @@ def recieve(data, db):
 def new_user(data, db):
     #create a new user
     #add user;username;password
-    print("new_user called");
     c = db.cursor();
 
+def login(data, db):
+    #log into the server
+    #command syntax: Login:user:password
+    print('login called');
+    username = data[1].strip();
+    password = data[2].strip();
+    cmd = "select User_ID from Users where Username='{}' and Password='{}'".format(username,password);
+    res = db.cursor().execute(cmd).fetchall();
+    if(len(res) > 1 or len(res) == 0):
+        return "fail";
+    else:
+        return "ack";
 
 #language of commands
 commands = {'Change Status'     : status,           #changes status of the user on the database
-            'exit'              : exit,                      #exits from the server and destroys the thread
+            'exit'              : exit,             #exits from the server and destroys the thread
                                                     #also sets status to offline
             'Send Message'      : send,             #sends a message from the user to another user
-            'Message Request'   : recieve,        #the client asks for all recieved messages
-            'Add User'          : new_user
+            'Message Request'   : recieve,          #the client asks for all recieved messages
+            'Add User'          : new_user,
+            'Login'             : login
             };
 
 #Function for handling connections. This will be used to create threads
@@ -181,28 +198,41 @@ def clientthread(conn):
     database = sqlite3.connect('database.db');
     QQ = 0;
 
-    #infinite loop so that function do not terminate and thread do not end.
-    while QQ != 1:
-         
-        #Receiving from client
+    #force the user to log in before using the app
+    user = "";
+    while(user == ""):
         data = conn.recv(1024);
         command = data.split(':');
+        if(command[0].strip() != 'Login'):
+            conn.send('Must log in before using the app\n');
+        else:
+            response = commands[command[0]](command, database);
+            conn.send(response + "\n");
+            if(response == 'ack'):
+                user = data[1];
+        
+    #infinite loop so that function do not terminate and thread do not end.
+    #Receiving from client
+    data = conn.recv(1024);
+    command = data.split(':');
 
-        if(command[0].strip() == "exit"):
-            QQ = 1;
-            break;
-        #need to split data into multiple tolkens
-        for i in range (0, len(command)):
-            print(command[i]);
+    #need to split data into multiple tolkens
+    for i in range (0, len(command)):
+        print(command[i]);
 
-        response = commands[command[0].strip()](command, database);
-        if(response != None):
-            for i in range (0, len(response)):
-                conn.send(response[i].encode('utf-8'));
+    response = commands[command[0].strip()](command, database);
+    if(response != None):
+        for i in range (0, len(response)):
+            conn.send(response[i].encode('utf-8'));
      
     #came out of loop
     conn.close();
     database.close();
+
+
+
+
+
 
 def debugthread():
     print('debug mode on\n');
@@ -225,6 +255,9 @@ if(false):
     time.sleep(5);
 
 
+s.listen(10); #tells the socket to start listening and
+              #specifies the queue for incomming communications
+print 'Socket now listening';
 #now keep talking with the client
 while (end == 1):
     #wait to accept a connection - blocking call
