@@ -22,7 +22,7 @@ import java.util.List;
 public class Compose extends Activity implements View.OnClickListener {
 
     private ArrayList<String> input_messages = new ArrayList<String>();
-    String[] testMessages = {"Test1","Test2","Test3"};
+    String[] testMessages = {"To World: Hello World!","From World: Hello Back!","To World: TestSent"};
     private ArrayAdapter<String> adapter;
     EditText type1 = null;  //these are made global variables for the purpose of calling them in multiple methods
     String packet = "";
@@ -77,18 +77,21 @@ public class Compose extends Activity implements View.OnClickListener {
             public void run() {
                 ArrayList<String> messages = new ArrayList<String>();
 
-                String ip = "10.0.2.2";
-                int portNumber = 8889;
+                String ip = "141.219.247.95";
+                int portNumber = 8870;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
                     System.out.println("Creating new Socket");
 
                     DataOutputStream dataOut = new DataOutputStream(clientSocket.getOutputStream());
-                    DataInputStream dataIn = new DataInputStream(clientSocket.getInputStream());
+                    DataInputStream  dataIn  = new DataInputStream(clientSocket.getInputStream());
 
-                    dataOut.writeBytes("Message Request"); //Temp Out message
+                    dataOut.writeBytes("Message Request:chicken"); //Temp Out message
+                    //String msgData = "";
                     String msgData = dataIn.readUTF(); //Read in all messages
-                    System.out.println(msgData);
+                    //dataIn.read(new byte[20]);
+                    //System.out.println(msgData);
+                    System.out.println("Data Recieved");
                     String[] tempMessages = msgData.split(":");
 
                     messages.clear();
@@ -121,12 +124,13 @@ public class Compose extends Activity implements View.OnClickListener {
             case R.id.send:
                 System.out.println("start send");
                 //puts message from textbox into top or bottom of list veiw
-                EditText message = (EditText) findViewById(R.id.type);
-                String packet = message.getText().toString();
-                displayMessage(packet);
+                //EditText message = (EditText) findViewById(R.id.type);
+                //String packet = message.getText().toString();
+                //displayMessage(packet);
 
                 //sends message encased in text box.
-                sendMessage();
+                //sendMessage();
+                getMessages();
 
                 break;
 
@@ -149,8 +153,8 @@ public class Compose extends Activity implements View.OnClickListener {
                 EditText message = (EditText) findViewById(R.id.type);
                 String packet = message.getText().toString();
 
-                String ip = "10.0.2.2";
-                int portNumber = 8889;
+                String ip = "141.219.152.71";
+                int portNumber = 8878;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
                     System.out.println("Creating new Socket");
