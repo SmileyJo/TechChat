@@ -15,7 +15,7 @@ from thread import *;
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
 HOST = '';   # Symbolic name meaning all available interfaces
-PORT = 8884; # Arbitrary non-privileged port
+PORT = int(sys.argv[1]); # Arbitrary non-privileged port
 true = True;
 false = False;
 #database semaphores
