@@ -77,7 +77,7 @@ public class Compose extends Activity implements View.OnClickListener {
             public void run() {
                 ArrayList<String> messages = new ArrayList<String>();
 
-                String ip = "141.219.247.95";
+                String ip = "10.0.2.2";
                 int portNumber = 8870;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
@@ -87,10 +87,15 @@ public class Compose extends Activity implements View.OnClickListener {
                     DataInputStream  dataIn  = new DataInputStream(clientSocket.getInputStream());
 
                     dataOut.writeBytes("Message Request:chicken"); //Temp Out message
-                    //String msgData = "";
-                    String msgData = dataIn.readUTF(); //Read in all messages
-                    //dataIn.read(new byte[20]);
-                    //System.out.println(msgData);
+                    String msgData = "";
+
+                    byte[] temp = new byte[1];
+                    while (dataIn.read(temp) != -1) {
+                        System.out.println("Read in one character");
+                        msgData += (char) temp[0];
+                    }
+                    System.out.println("Managed to exit loop");
+                    System.out.println(msgData);
                     System.out.println("Data Recieved");
                     String[] tempMessages = msgData.split(":");
 
