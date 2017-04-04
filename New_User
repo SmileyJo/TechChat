@@ -5,11 +5,15 @@ def new_user(data, db):
 		email = data[1].strip();
 		username = data[2].strip();
 		password = data[3].strip();
+		newUser = (
+			(username, email, password, 0)
+		)
 		c = db.cursor();
 		dbLock.acquire(true,);
-		c.execute('insert into Users(Username, Password, Email, Status) values('+username+','+password+','+email+');');
+		c.execute("insert into Users VALUES(?, ?, ?, ?)", newUser);
 	except sqlite3.IntegrityError as e:
 		if 'Unique Constraint' in e.message:
 			conn.send('Username is already in use');
 			db.rollback();
+	db.commit();
 	dbLock.release();
