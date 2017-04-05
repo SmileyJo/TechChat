@@ -1,7 +1,6 @@
 package com.example.ejmoore.testing;
 
 import android.app.Activity;
-import android.icu.util.VersionInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
