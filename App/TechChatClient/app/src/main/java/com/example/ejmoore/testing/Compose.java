@@ -10,16 +10,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.OptionalDataException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 
 public class Compose extends Activity implements View.OnClickListener {
 
     private ArrayList<String> input_messages = new ArrayList<String>();
+    String[] testMessages = {"","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
     private ArrayAdapter<String> adapter;
     EditText type1 = null;  //these are made global variables for the purpose of calling them in multiple methods
     String packet = "";
@@ -51,25 +56,79 @@ public class Compose extends Activity implements View.OnClickListener {
 
         System.out.println("after listview but before arrayadapter");
         //indicates the list veiw can pull from the arraylist input_messages
-        adapter = new ArrayAdapter<String>(Compose.this, android.R.layout.simple_list_item_1, input_messages);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, testMessages);
         messagelist.setAdapter(adapter);
 
-
-//          Thread connectThread = new Thread(new Runnable() { //is supposed to connect to the server.
-//              public void run() {
-//                  serverConnect = new Connection(Compose.this);  //is supposed to connect you to the established server
-//                  serverConnect.run();  //runs the connection
-//
-//              }
-//                      });
-//        connectThread.start();
+        getMessages();
 
     }
 
+    public void getMessages() {
+        Thread retrieve = null;
+
+        class get implements Runnable {
+            @Override
+            public void run() {
+                ArrayList<String> messages = new ArrayList<String>();
+
+                String ip = "10.0.2.2";
+                int portNumber = 8888;
+                try {
+                    Socket clientSocket = new Socket(ip,portNumber);
+                    System.out.println("Creating new Socket");
+
+                    DataOutputStream dataOut = new DataOutputStream(clientSocket.getOutputStream());
+                    DataInputStream  dataIn  = new DataInputStream(clientSocket.getInputStream());
+
+                    dataOut.writeBytes("Login:danej:danej");
+
+                    dataOut.writeBytes("Message Request:chicken"); //Temp Out message
+                    String msgData = "";
+
+                    byte[] temp = new byte[1];
+                    while (dataIn.read(temp) != -1) {
+                        System.out.println("Read in one character");
+                        msgData += (char) temp[0];
+                    }
+                    System.out.println("Managed to exit loop");
+                    System.out.println(msgData);
+                    System.out.println("Data Recieved");
+                    String[] tempMessages = msgData.split("\n");
+
+                    messages.clear();
+
+                    for (int i = 0; i < tempMessages.length; i++) {
+                        messages.add(tempMessages[i]);
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //displayMessage();
+                int i = 0;
+                for (String s : messages) {
+                    testMessages[i++] = s;
+                }
+
+            }
+        }
+
+        retrieve = new Thread(new get());
+        retrieve.start();
+
+        try {
+            sleep(1);
+        } catch (InterruptedException e) {
+        }
+
+        displayMessage();
+    }
+
     //adds the string to the input message and notifies the array adapter for list of change.
-    public void displayMessage(String string){
-        System.out.println("add message to array");
-        input_messages.add(string);
+    public void displayMessage(){
+        //input_messages.add(string);
+        //testMessages[2] = string;
         adapter.notifyDataSetChanged();
     }
     
@@ -80,10 +139,13 @@ public class Compose extends Activity implements View.OnClickListener {
             case R.id.send:
                 System.out.println("start send");
                 //puts message from textbox into top or bottom of list veiw
-                displayMessage(packet);
+                //EditText message = (EditText) findViewById(R.id.type);
+                //String packet = message.getText().toString();
+                //displayMessage(packet);
 
                 //sends message encased in text box.
                 sendMessage();
+                //getMessages();
 
                 break;
 
@@ -97,23 +159,42 @@ public class Compose extends Activity implements View.OnClickListener {
     }
 
     public void sendMessage() {
-        int portNumber = 8889;
-        try {
-            System.out.println("Creating new Socket");
-            Socket clientSocket = new Socket("10.0.2.2", portNumber);
-            DataOutputStream send = new DataOutputStream(clientSocket.getOutputStream());
+        EditText message = (EditText) findViewById(R.id.type);
 
-            packet = "Send message:" + "TestFromID" + ":" + packet;
-            //made packet global for the sake of using it in other methods
+        class sendThread implements Runnable {
 
-            System.out.println("Sending: " + packet);
-            send.writeBytes(packet);
+            @Override
+            public void run() {
+                EditText message = (EditText) findViewById(R.id.type);
+                String packet = message.getText().toString();
 
+                String ip = "10.0.2.2";
+                int portNumber = 8888;
+                try {
+                    Socket clientSocket = new Socket(ip,portNumber);
+                    System.out.println("Creating new Socket");
+                    DataOutputStream send = new DataOutputStream(clientSocket.getOutputStream());
 
-            type1.setText("");
-        } catch (Exception e) {
-            e.printStackTrace();
+                    send.writeBytes("Login:danej:danej");
+
+                    packet = "Send Message:" + "danej" + ":" +"chicken" + ":" + packet;
+                    System.out.println("Sending: " + packet);
+                    send.writeBytes(packet);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+
+        Thread send = null;
+        send = new Thread(new sendThread());
+        send.start();
+
+        message.setText("");
+
+        type1.setText("");
+
+        getMessages();
     }
 
 
