@@ -18,11 +18,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 
 public class Compose extends Activity implements View.OnClickListener {
 
     private ArrayList<String> input_messages = new ArrayList<String>();
-    String[] testMessages = {"To World: Hello World!","From World: Hello Back!","To World: TestSent"};
+    String[] testMessages = {"","","","","","","","","",""};
     private ArrayAdapter<String> adapter;
     EditText type1 = null;  //these are made global variables for the purpose of calling them in multiple methods
     String packet = "";
@@ -57,15 +59,7 @@ public class Compose extends Activity implements View.OnClickListener {
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, testMessages);
         messagelist.setAdapter(adapter);
 
-
-//          Thread connectThread = new Thread(new Runnable() { //is supposed to connect to the server.
-//              public void run() {
-//                  serverConnect = new Connection(Compose.this);  //is supposed to connect you to the established server
-//                  serverConnect.run();  //runs the connection
-//
-//              }
-//                      });
-//        connectThread.start();
+        getMessages();
 
     }
 
@@ -78,13 +72,15 @@ public class Compose extends Activity implements View.OnClickListener {
                 ArrayList<String> messages = new ArrayList<String>();
 
                 String ip = "10.0.2.2";
-                int portNumber = 8870;
+                int portNumber = 8884;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
                     System.out.println("Creating new Socket");
 
                     DataOutputStream dataOut = new DataOutputStream(clientSocket.getOutputStream());
                     DataInputStream  dataIn  = new DataInputStream(clientSocket.getInputStream());
+
+                    dataOut.writeBytes("Login:danej:danej");
 
                     dataOut.writeBytes("Message Request:chicken"); //Temp Out message
                     String msgData = "";
@@ -97,7 +93,7 @@ public class Compose extends Activity implements View.OnClickListener {
                     System.out.println("Managed to exit loop");
                     System.out.println(msgData);
                     System.out.println("Data Recieved");
-                    String[] tempMessages = msgData.split(":");
+                    String[] tempMessages = msgData.split("\n");
 
                     messages.clear();
 
@@ -108,17 +104,31 @@ public class Compose extends Activity implements View.OnClickListener {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                //displayMessage();
+                int i = 0;
+                for (String s : messages) {
+                    testMessages[i++] = s;
+                }
+
             }
         }
 
         retrieve = new Thread(new get());
         retrieve.start();
+
+        try {
+            sleep(1);
+        } catch (InterruptedException e) {
+        }
+
+        displayMessage();
     }
 
     //adds the string to the input message and notifies the array adapter for list of change.
-    public void displayMessage(String string){
-        input_messages.add(string);
-        testMessages[2] = string;
+    public void displayMessage(){
+        //input_messages.add(string);
+        //testMessages[2] = string;
         adapter.notifyDataSetChanged();
     }
     
@@ -134,8 +144,8 @@ public class Compose extends Activity implements View.OnClickListener {
                 //displayMessage(packet);
 
                 //sends message encased in text box.
-                //sendMessage();
-                getMessages();
+                sendMessage();
+                //getMessages();
 
                 break;
 
