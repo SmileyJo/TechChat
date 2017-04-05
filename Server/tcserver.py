@@ -167,32 +167,38 @@ def recieve(data, db):
 
 
 def new_user(data, db):
-    #create a new user
-    #add user;username;password
-    if(len(data) != 4):
-       conn.send('Illegal Argument Exception: 4 arguments expected');
+    #creates a new user and stores it into the database
+    #command syntax: Add User:email:username:password
 
-    c = db.cursor();
     email = data[1].strip();
     username = data[2].strip();
     password = data[3].strip();
-    status = 0; #default status to online
-    
+    newUser = (str(username), str(password), str(email))
+    c = db.cursor();
     dbLock.acquire(true,);
-    #needs to be surrounded in try:catch
-    c.execute('insert into Users(Username, Password, Email, Status) values('+username+','+password+','+email+','+status+');');
+    if(username.__eq__(c.execute("SELECT Username FROM Users WHERE Username = '"+username+"';"))):
+        conn.send('Username already exists.\n');
+        db.rollback();
+        dbLock.release();
+        return 'fail';
+        
+    c.execute("insert into Users(Username, Password, Email) VALUES(?, ?, ?)", newUser);
+    db.commit();
     dbLock.release();
-    return none;
+    return 'ack';
+
+def conversation(data, db):
+    print(stuff);
 
 def login(data, db):
     #log into the server
     #command syntax: Login:user:password
     print('login called');
-    dbLock.aquire(true,);
+    dbLock.acquire(true,);
     username = data[1].strip();
     password = data[2].strip();
     cmd = "select User_ID from Users where Username='{}' and Password='{}'".format(username,password);
-    dbLock.realease();
+    dbLock.release();
     res = db.cursor().execute(cmd).fetchall();
     if(len(res) > 1 or len(res) == 0):
         return "fail";
@@ -267,7 +273,7 @@ def debugthread():
     c.close();
     database.close();
 
-if(true):
+if(false):
     print('starting debug mode\n')
     db1 = start_new_thread(debugthread, ());
     end = 0;
