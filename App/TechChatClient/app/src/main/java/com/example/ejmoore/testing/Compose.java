@@ -24,7 +24,7 @@ import static java.lang.Thread.sleep;
 public class Compose extends Activity implements View.OnClickListener {
 
     private ArrayList<String> input_messages = new ArrayList<String>();
-    String[] testMessages = {"","","","","","","","","",""};
+    String[] testMessages = {"","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
     private ArrayAdapter<String> adapter;
     EditText type1 = null;  //these are made global variables for the purpose of calling them in multiple methods
     String packet = "";
@@ -72,7 +72,7 @@ public class Compose extends Activity implements View.OnClickListener {
                 ArrayList<String> messages = new ArrayList<String>();
 
                 String ip = "10.0.2.2";
-                int portNumber = 8884;
+                int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
                     System.out.println("Creating new Socket");
@@ -168,13 +168,16 @@ public class Compose extends Activity implements View.OnClickListener {
                 EditText message = (EditText) findViewById(R.id.type);
                 String packet = message.getText().toString();
 
-                String ip = "141.219.152.71";
-                int portNumber = 8878;
+                String ip = "10.0.2.2";
+                int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
                     System.out.println("Creating new Socket");
                     DataOutputStream send = new DataOutputStream(clientSocket.getOutputStream());
-                    packet = "Send Message:" + "TestFromID" + ":" +"TestToID" + ":" + packet;
+
+                    send.writeBytes("Login:danej:danej");
+
+                    packet = "Send Message:" + "danej" + ":" +"chicken" + ":" + packet;
                     System.out.println("Sending: " + packet);
                     send.writeBytes(packet);
                 } catch (IOException e) {
@@ -190,6 +193,8 @@ public class Compose extends Activity implements View.OnClickListener {
         message.setText("");
 
         type1.setText("");
+
+        getMessages();
     }
 
 
