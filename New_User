@@ -1,0 +1,18 @@
+def new_user(data, db):
+	#creates a new user and stores it into the database
+	#command syntax: Add User:email:username:password
+	try:
+		email = data[1].strip();
+		username = data[2].strip();
+		password = data[3].strip();
+		newUser = (str(username), str(password), str(email))
+		
+		c = db.cursor();
+		dbLock.acquire(true,);
+		c.execute("insert into Users(Username, Password, Email) VALUES(?, ?, ?)", newUser);
+	except sqlite3.IntegrityError as e:
+		if 'Unique Constraint' in e.message:
+			conn.send('Username is already in use');
+			db.rollback();
+	db.commit();
+	dbLock.release();
