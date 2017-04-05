@@ -10,10 +10,10 @@ import signal;
 from threading import Lock;
 from thread import *;
 #proper command line start: ./tcserver.py <port>
-if(len(sys.argv) < 2){
+if(len(sys.argv) < 2):
     print 'Usage: python tcserver.py <port>';
     sys.exit(0);
-}
+
 
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
