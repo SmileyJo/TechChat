@@ -176,7 +176,7 @@ def new_user(data, db):
     newUser = (str(username), str(password), str(email))
     c = db.cursor();
     dbLock.acquire(true,);
-    if(username.__eq__(c.execute("SELECT Username FROM Users WHERE Username = '"+username+"';"))):
+    if(username == (c.execute('select Username from Users where Username="{}"'.format(username)).fetchall()[0][0])):
         conn.send('Username already exists.\n');
         db.rollback();
         dbLock.release();
