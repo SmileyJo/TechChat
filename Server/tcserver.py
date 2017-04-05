@@ -9,8 +9,11 @@ import time;
 import signal;
 from threading import Lock;
 from thread import *;
-
-
+#proper command line start: ./tcserver.py <port>
+if(len(sys.argv) < 2){
+    print 'Usage: python tcserver.py <port>';
+    sys.exit(0);
+}
 
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
@@ -60,6 +63,7 @@ def send(data, db):
     c = db.cursor();
     #query the db for login info matching
     #the inputted username and pw
+    #Send Message:from:to:msg
     if(len(data) != 4):
         conn.send('Illegal Argument Exception: 4 arguments expected');
     #we need to write the procedure for the server to execute
@@ -166,7 +170,20 @@ def recieve(data, db):
 def new_user(data, db):
     #create a new user
     #add user;username;password
+    if(len(data) != 4):
+       conn.send('Illegal Argument Exception: 4 arguments expected');
+
     c = db.cursor();
+    email = data[1].strip();
+    username = data[2].strip();
+    password = data[3].strip();
+    status = 0; #default status to online
+    
+    dbLock.acquire(true,);
+    #needs to be surrounded in try:catch
+    c.execute('insert into Users(Username, Password, Email, Status) values('+username+','+password+','+email+','+status+');');
+    dbLock.release();
+    return none;
 
 def login(data, db):
     #log into the server
