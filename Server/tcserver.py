@@ -42,7 +42,6 @@ end = 1;
 
 
 def dieQuietly(_signo, _stackframe):
-    print("Sigterm Caught");
     s.close();
     sys.exit(0);
 
@@ -189,9 +188,11 @@ def login(data, db):
     #log into the server
     #command syntax: Login:user:password
     print('login called');
+    dbLock.aquire(true,);
     username = data[1].strip();
     password = data[2].strip();
     cmd = "select User_ID from Users where Username='{}' and Password='{}'".format(username,password);
+    dbLock.realease();
     res = db.cursor().execute(cmd).fetchall();
     if(len(res) > 1 or len(res) == 0):
         return "fail";
@@ -199,13 +200,14 @@ def login(data, db):
         return "ack";
 
 #language of commands
-commands = {'Change Status'     : status,           #changes status of the user on the database
-            'exit'              : exit,             #exits from the server and destroys the thread
-                                                    #also sets status to offline
-            'Send Message'      : send,             #sends a message from the user to another user
-            'Message Request'   : recieve,          #the client asks for all recieved messages
-            'Add User'          : new_user,
-            'Login'             : login
+commands = {'Change Status'         : status,           #changes status of the user on the database
+            'exit'                  : exit,             #exits from the server and destroys the thread
+                                                        #also sets status to offline
+            'Send Message'          : send,             #sends a message from the user to another user
+            'Message Request'       : recieve,          #the client asks for all recieved messages
+            'Add User'              : new_user,
+            'Login'                 : login,
+            'Conversation Request'  : conversation
             };
 
 #Function for handling connections. This will be used to create threads
@@ -220,7 +222,7 @@ def clientthread(conn):
     while(user == ""):
         data = conn.recv(1024);
         command = data.split(':');
-        if(command[0].strip() != 'Login'):
+        if(command[0].strip() != 'Login' and command[0].strip() != 'Add User'):
             conn.send('Must log in before using the app\n');
         else:
             response = commands[command[0]](command, database);
@@ -257,7 +259,7 @@ def debugthread():
     c = database.cursor();
     try:
              # c.execute('select User_ID from Users where Username="chicken";')
-        data = c.execute('select User_ID from Users where Username="chicken"');
+        data = c.execute('select asdf from Users where Username="chicken"');
         print(data.fetchall());
     except sqlite3.Error, msg:
         print('error in the database');
@@ -265,7 +267,7 @@ def debugthread():
     c.close();
     database.close();
 
-if(false):
+if(true):
     print('starting debug mode\n')
     db1 = start_new_thread(debugthread, ());
     end = 0;
