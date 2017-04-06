@@ -58,15 +58,6 @@
         android:layout_alignStart="@+id/autoLABEL"
         android:layout_marginTop="15dp" />
 
-    <CheckBox
-        android:text="50 "
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/delete1"
-        android:layout_alignBaseline="@+id/delete2"
-        android:layout_alignBottom="@+id/delete2"
-        android:layout_toEndOf="@+id/autoresponseTEXT"
-        android:layout_marginStart="45dp" />
 
     <TextView
         android:text="Delete Messages After:"
@@ -75,8 +66,9 @@
         android:id="@+id/deleteLABEL"
         android:textAppearance="@android:style/TextAppearance"
         android:layout_marginLeft="18dp"
+        android:layout_marginStart="56dp"
         android:layout_alignTop="@+id/OFFVibrate"
-        android:layout_alignEnd="@+id/msgSET" />
+        android:layout_toEndOf="@+id/autoresponseTEXT" />
 
     <TextView
         android:text="Message Settings"
@@ -85,25 +77,46 @@
         android:id="@+id/msgSET"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/delete1" />
+        android:layout_alignStart="@+id/deleteLABEL" />
+    
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignStart="@+id/deleteLABEL"
+        android:layout_below="@+id/deleteLABEL"
+        android:checkedButton="@+id/radioButton50">
+        
+        <RadioButton
+            android:id="@+id/radioButton50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_vertical"
+            android:layout_weight="0.13"
+            android:checked="true"
+            android:text="50"
+            android:textSize="25dp" />
 
-    <CheckBox
-        android:text="100"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/delete2"
-        android:layout_marginStart="21dp"
-        android:layout_alignBaseline="@+id/showmessage"
-        android:layout_alignBottom="@+id/showmessage"
-        android:layout_toEndOf="@+id/delete1" />
+        <RadioButton
+            android:id="@+id/radioButton100"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_vertical"
+            android:layout_weight="0.13"
+            android:checked="false"
+            android:text="100"
+            android:textSize="25dp" />
 
-    <CheckBox
-        android:text="200"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/delete3"
-        android:layout_marginStart="19dp"
-        android:layout_alignBaseline="@+id/delete2"
-        android:layout_alignBottom="@+id/delete2"
-        android:layout_toEndOf="@+id/delete2" />
-</RelativeLayout>
+        <RadioButton
+            android:id="@+id/radioButton200"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_vertical"
+            android:layout_weight="0.13"
+            android:checked="false"
+            android:text="200"
+            android:textSize="25dp" />
+
+    </RadioGroup>
+
+ </RelativeLayout>
