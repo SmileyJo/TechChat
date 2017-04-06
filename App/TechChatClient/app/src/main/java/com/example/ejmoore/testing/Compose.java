@@ -47,8 +47,6 @@ public class Compose extends Activity implements View.OnClickListener {
         Button phoneBook = (Button) findViewById(R.id.phonebook);
         phoneBook.setOnClickListener(this);
 
-        EditText user = (EditText) findViewById(R.id.username);
-
         type1 = (EditText) findViewById(R.id.type);  //sets the global variables
         packet = type1.getText().toString();
 
