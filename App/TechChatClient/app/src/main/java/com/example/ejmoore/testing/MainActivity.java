@@ -22,8 +22,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         username = (EditText)findViewById(R.id.editUsername);
         password = (EditText)findViewById(R.id.editPassword);
 
-        Button loginOrRegister = (Button) findViewById(R.id.loginOrRegister);
-        loginOrRegister.setOnClickListener(this);
+        Button signIn = (Button) findViewById(R.id.signIn);
+        signIn.setOnClickListener(this);
+
+        Button register = (Button) findViewById(R.id.register);
+        register.setOnClickListener(this);
     }
 
     @Override
@@ -31,16 +34,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
         //cases are used to identify the seperate jobs of each button
 
         switch (v.getId()) { //allows the switching of jobs based on id of button
-            case R.id.loginOrRegister:
-                
-                startActivity(new Intent(MainActivity.this, HomePage.class));
-                
-                /*if(username.getText().toString().equals("username") &&
+            case R.id.signIn:
+                if(username.getText().toString().equals("username") &&
                         password.getText().toString().equals("password")) {
                     startActivity(new Intent(MainActivity.this, HomePage.class));
                 } else {
                     Toast.makeText(getApplicationContext(), "Wrong username or password. try 'username' and 'password'", Toast.LENGTH_SHORT).show();
-                }*/
+                }
+                break;
+            case R.id.register:
+                startActivity(new Intent(MainActivity.this, Register.class));
                 break;
         }
     }
