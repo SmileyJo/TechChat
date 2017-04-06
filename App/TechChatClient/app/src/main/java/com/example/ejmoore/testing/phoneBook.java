@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.ejmoore.testing.R;
-
 /**
  * Created by user on 2/22/2017.
  */
@@ -31,7 +29,7 @@ public class phoneBook extends Activity implements View.OnClickListener{
         {
             switch(v.getId()) {
 
-                case R.id.compose:
+                case R.id.conversations:
                     startActivity(new Intent(phoneBook.this, Compose.class));
                     break;
             }
