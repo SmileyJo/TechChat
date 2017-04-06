@@ -23,7 +23,7 @@ public class Settings extends Activity{
         bellow is the listener for the text input of our auto-response
         it converts the input to a string that can be used throughout the
         rest of the code.
-        you can reerance this string by calling
+        you can referance this string by calling
          */
 
     }
@@ -36,7 +36,7 @@ public class Settings extends Activity{
 
         switch(v1.getId()){
 
-            case R.id.delete1:
+            case R.id.radioButton50:
                 if(checked){
                     //delete2 and delete3 cannot be checked at the same time
                     //if either are checked, uncheck them. (swap check)
@@ -48,7 +48,7 @@ public class Settings extends Activity{
                     //else do nothing
                 }
                 break;
-            case R.id.delete2:
+            case R.id.radioButton100:
                 if(checked){
                     //delete1 and delete3 cannot be checked at the same time
                     //if either are checked, uncheck them. (swap check)
@@ -60,7 +60,7 @@ public class Settings extends Activity{
                 }
                 break;
 
-            case R.id.delete3:
+            case R.id.radioButton200:
                 if(checked){
                     //delete1 and delete2 cannot be checked at the same time
                     //if either are checked, uncheck them. (swap check)
@@ -108,6 +108,7 @@ public class Settings extends Activity{
                 else{
                     //shut off autoresponseTEXT field so nothing can be entered into it.
                 }
+                break;
         }
     }
 
