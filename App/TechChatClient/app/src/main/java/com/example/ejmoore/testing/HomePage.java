@@ -24,8 +24,8 @@ public class HomePage extends Activity implements View.OnClickListener {
         multiple buttons.
          */
 
-        Button compose = (Button) findViewById(R.id.compose);
-        compose.setOnClickListener(this);
+        Button conversations = (Button) findViewById(R.id.conversations);
+        conversations.setOnClickListener(this);
 
         Button busy = (Button) findViewById(R.id.busy);
         busy.setOnClickListener(this);
@@ -33,7 +33,6 @@ public class HomePage extends Activity implements View.OnClickListener {
         Button settings = (Button) findViewById(R.id.Settings);
         settings.setOnClickListener(this);
 
-        ListView People = (ListView) findViewById(R.id.convos);
         //People.setAdapter(new listAdapter(this, R.layout.list_layout, data));
     }
 
@@ -44,8 +43,8 @@ public class HomePage extends Activity implements View.OnClickListener {
 
         switch (v.getId()) { //allows the switching of jobs based on id of button
 
-            case R.id.compose:
-                startActivity(new Intent(HomePage.this, Compose.class));
+            case R.id.conversations:
+                startActivity(new Intent(HomePage.this, Conversations.class));
                 break;
 
             case R.id.busy:
