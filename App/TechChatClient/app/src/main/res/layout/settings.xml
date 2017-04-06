@@ -68,15 +68,7 @@
         android:layout_alignLeft="@+id/deleteLABEL"
         android:layout_marginBottom="14dp" />
 
-    <CheckBox
-        android:text="50 "
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/delete1"
-        android:layout_below="@+id/deleteLABEL"
-        android:layout_toLeftOf="@+id/autoresponseTEXT" />
-
-    <EditText
+   <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
@@ -86,21 +78,44 @@
         android:layout_below="@+id/autoresponse"
         android:layout_toRightOf="@+id/blockSET"
         android:layout_alignBottom="@+id/autoLABEL" />
-
-    <CheckBox
-        android:text="100"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/delete2"
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignStart="@+id/deleteLABEL"
         android:layout_below="@+id/deleteLABEL"
-        android:layout_centerHorizontal="true" />
+        android:checkedButton="@+id/radioButton50">
 
-    <CheckBox
-        android:text="200"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/delete3"
-        android:layout_alignBaseline="@+id/delete2"
-        android:layout_alignBottom="@+id/delete2"
-        android:layout_toRightOf="@+id/showmessage" />
+        <RadioButton
+            android:id="@+id/radioButton50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_vertical"
+            android:layout_weight="0.13"
+            android:checked="true"
+            android:text="50"
+            android:textSize="25dp" />
+
+        <RadioButton
+            android:id="@+id/radioButton100"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_vertical"
+            android:layout_weight="0.13"
+            android:checked="false"
+            android:text="100"
+            android:textSize="25dp" />
+
+        <RadioButton
+            android:id="@+id/radioButton200"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_vertical"
+            android:layout_weight="0.13"
+            android:checked="false"
+            android:text="200"
+            android:textSize="25dp" />
+
+    </RadioGroup>
+    
 </RelativeLayout>
