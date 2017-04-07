@@ -162,7 +162,7 @@ def recieve(data, db):
         return response;
     except Error,msg:
         print(msg);
-        dbLock.realease();
+        dbLock.release();
 
 
 
@@ -188,6 +188,25 @@ def new_user(data, db):
     return 'ack';
 
 def conversation(data, db):
+    #Syntax: Conversation Request:user
+    try:
+        user = data[1];
+        c = db.cursor();
+        cmd = 'select User_ID from Conversation where Username="{}"'.format(user);
+        dbLock.acquire(true,);
+        uid = c.execute(cmd).fetchall()[0][0];
+        cmd = 'select u_Two from Users where u_One={}'.format(uid);
+        convers = c.execute(cmd).fetchall()[0];#just the user ids
+        response = {};
+        for i in range 0 to len(convers):
+            cmd = 'select Username from Users where User_ID={}'.format(convers[i]);
+            u2 = c.execute(cmd).fetchall()[0][0];
+            response[i] = '{}'.format(u2);
+        dbLock.release();
+        return response;
+    except Error,msg:
+        print(msg);
+        dbLock.release();
     print(stuff);
 
 def login(data, db):
