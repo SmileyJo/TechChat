@@ -10,10 +10,10 @@ import signal;
 from threading import Lock;
 from thread import *;
 #proper command line start: ./tcserver.py <port>
-if(len(sys.argv) < 2){
+if(len(sys.argv) < 2):
     print 'Usage: python tcserver.py <port>';
     sys.exit(0);
-}
+
 
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
@@ -42,7 +42,6 @@ end = 1;
 
 
 def dieQuietly(_signo, _stackframe):
-    print("Sigterm Caught");
     s.close();
     sys.exit(0);
 
@@ -163,35 +162,62 @@ def recieve(data, db):
         return response;
     except Error,msg:
         print(msg);
-        dbLock.realease();
+        dbLock.release();
 
 
 
 def new_user(data, db):
-    #create a new user
-    #add user;username;password
-    if(len(data) != 4):
-       conn.send('Illegal Argument Exception: 4 arguments expected');
+    #creates a new user and stores it into the database
+    #command syntax: Add User:email:username:password
 
-    c = db.cursor();
     email = data[1].strip();
     username = data[2].strip();
     password = data[3].strip();
-    status = 0; #default status to online
-    
+    newUser = (str(username), str(password), str(email))
+    c = db.cursor();
     dbLock.acquire(true,);
-    #needs to be surrounded in try:catch
-    c.execute('insert into Users(Username, Password, Email, Status) values('+username+','+password+','+email+','+status+');');
+    if(username == (c.execute('select Username from Users where Username="{}"'.format(username)).fetchall()[0][0])):
+        conn.send('Username already exists.\n');
+        db.rollback();
+        dbLock.release();
+        return 'fail';
+        
+    c.execute("insert into Users(Username, Password, Email) VALUES(?, ?, ?)", newUser);
+    db.commit();
     dbLock.release();
-    return none;
+    return 'ack';
+
+def conversation(data, db):
+    #Syntax: Conversation Request:user
+    try:
+        user = data[1];
+        c = db.cursor();
+        cmd = 'select User_ID from Conversation where Username="{}"'.format(user);
+        dbLock.acquire(true,);
+        uid = c.execute(cmd).fetchall()[0][0];
+        cmd = 'select u_Two from Users where u_One={}'.format(uid);
+        convers = c.execute(cmd).fetchall()[0];#just the user ids
+        response = {};
+        for i in range 0 to len(convers):
+            cmd = 'select Username from Users where User_ID={}'.format(convers[i]);
+            u2 = c.execute(cmd).fetchall()[0][0];
+            response[i] = '{}'.format(u2);
+        dbLock.release();
+        return response;
+    except Error,msg:
+        print(msg);
+        dbLock.release();
+    print(stuff);
 
 def login(data, db):
     #log into the server
     #command syntax: Login:user:password
     print('login called');
+    dbLock.acquire(true,);
     username = data[1].strip();
     password = data[2].strip();
     cmd = "select User_ID from Users where Username='{}' and Password='{}'".format(username,password);
+    dbLock.release();
     res = db.cursor().execute(cmd).fetchall();
     if(len(res) > 1 or len(res) == 0):
         return "fail";
@@ -199,13 +225,14 @@ def login(data, db):
         return "ack";
 
 #language of commands
-commands = {'Change Status'     : status,           #changes status of the user on the database
-            'exit'              : exit,             #exits from the server and destroys the thread
-                                                    #also sets status to offline
-            'Send Message'      : send,             #sends a message from the user to another user
-            'Message Request'   : recieve,          #the client asks for all recieved messages
-            'Add User'          : new_user,
-            'Login'             : login
+commands = {'Change Status'         : status,           #changes status of the user on the database
+            'exit'                  : exit,             #exits from the server and destroys the thread
+                                                        #also sets status to offline
+            'Send Message'          : send,             #sends a message from the user to another user
+            'Message Request'       : recieve,          #the client asks for all recieved messages
+            'Add User'              : new_user,
+            'Login'                 : login,
+            'Conversation Request'  : conversation
             };
 
 #Function for handling connections. This will be used to create threads
@@ -220,7 +247,7 @@ def clientthread(conn):
     while(user == ""):
         data = conn.recv(1024);
         command = data.split(':');
-        if(command[0].strip() != 'Login'):
+        if(command[0].strip() != 'Login' and command[0].strip() != 'Add User'):
             conn.send('Must log in before using the app\n');
         else:
             response = commands[command[0]](command, database);
@@ -257,7 +284,7 @@ def debugthread():
     c = database.cursor();
     try:
              # c.execute('select User_ID from Users where Username="chicken";')
-        data = c.execute('select User_ID from Users where Username="chicken"');
+        data = c.execute('select asdf from Users where Username="chicken"');
         print(data.fetchall());
     except sqlite3.Error, msg:
         print('error in the database');
