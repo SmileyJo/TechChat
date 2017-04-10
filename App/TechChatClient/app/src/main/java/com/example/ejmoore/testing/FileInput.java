@@ -1,4 +1,4 @@
-package ;
+package com.example.ejmoore.testing;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
