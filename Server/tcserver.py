@@ -174,7 +174,7 @@ def new_user(data, db):
 			conn.send('Username already exists.\n');
 			db.rollback();
 			dbLock.release();
-			return 'fail';
+			return 'fal';
 			
 		dbLock.release();
 		return 'ack';
@@ -221,7 +221,7 @@ def login(data, db):
     dbLock.release();
     res = db.cursor().execute(cmd).fetchall();
     if(len(res) > 1 or len(res) == 0):
-        return "fail";
+        return "fal";
     else:
         return "ack";
 
