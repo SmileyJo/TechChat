@@ -28,16 +28,20 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         //cases are used to identify the seperate jobs of each button
-
         switch (v.getId()) { //allows the switching of jobs based on id of button
-            case R.id.loginOrRegister:
-                if(username.getText().toString().equals("username") &&
-                        password.getText().toString().equals("password")) {
-                    startActivity(new Intent(MainActivity.this, HomePage.class));
+            case R.id.signIn:
+                //checks to see if a new username needs to be made
+                if(user != StoredUsername && StoredUsername == null){
+                    FileOutput.writeFile("username.txt", user);
+                    Toast.makeText(getApplicationContext(), "Congrats, "+
+                            username.toString()+"! Your Username was made. /n " +
+                            "Login again to go to home page.", Toast.LENGTH_SHORT).show();
+                }
+                if(user == StoredUsername) {
+                    startActivity(new Intent(com.example.ejmoore.testing.MainActivity.this, HomePage.class));
                 } else {
-                    Toast.makeText(getApplicationContext(), "Wrong username or password. try 'username' and 'password'", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Wrong username. Try Again", Toast.LENGTH_SHORT).show();
                 }
                 break;
-        }
     }
 }
