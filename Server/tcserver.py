@@ -77,16 +77,6 @@ def send(data, db):
     #"select * from people where name_last=:who and age=:age", {"who": who, "age": age}
     senderR = c.execute('select User_ID from Users where Username="'+sender+'";').fetchall();
     recieverR = c.execute('select User_ID from Users where Username="'+reciever+'";').fetchall();
-    
-    #c_ID  INTEGER      PRIMARY KEY
-    #                   NOT NULL,
-    #u_One INT (11)     NOT NULL
-    #                   REFERENCES Users (User_ID),
-    #u_Two INT (11)     REFERENCES Users (User_ID) 
-    #                   NOT NULL,
-    #time  INT (11)     DEFAULT NULL,
-    #ip    VARCHAR (30) DEFAULT NULL
-
     #critical section
     
     conversations = c.execute('select c_ID from Conversation where (u_One=' + str(senderR[0][0])
@@ -160,7 +150,7 @@ def recieve(data, db):
 
         dbLock.release();
         return response;
-    except Error,msg:
+    except sqlite3.Error,msg:
         print(msg);
         dbLock.release();
 
@@ -189,25 +179,34 @@ def new_user(data, db):
 
 def conversation(data, db):
     #Syntax: Conversation Request:user
+    #return syntax: user2
     try:
-        user = data[1];
+        user = data[1].strip();
         c = db.cursor();
-        cmd = 'select User_ID from Conversation where Username="{}"'.format(user);
+        cmd = 'select User_ID from Users where Username="{}"'.format(user);
         dbLock.acquire(true,);
         uid = c.execute(cmd).fetchall()[0][0];
-        cmd = 'select u_Two from Users where u_One={}'.format(uid);
+        cmd = 'select c_ID from Conversation where u_One={0} or u_Two={0}'.format(uid);
         convers = c.execute(cmd).fetchall()[0];#just the user ids
         response = {};
-        for i in range 0 to len(convers):
-            cmd = 'select Username from Users where User_ID={}'.format(convers[i]);
+        for i in range (0, len(convers)):
+            cmd = 'select u_One from Conversation where c_ID={}'.format(convers[i]);
+            u1 = c.execute(cmd).fetchall()[0][0];
+            cmd = 'select u_Two from Conversation where c_ID={}'.format(convers[i]);
             u2 = c.execute(cmd).fetchall()[0][0];
-            response[i] = '{}'.format(u2);
+            if(u1 == uid):
+                cmd = 'select Username from Users where User_ID={}'.format(u2);
+                u = c.execute(cmd).fetchall()[0][0];
+                response[i] = '{}'.format(u);
+            else:
+                cmd = 'select Username from Users where User_ID={}'.format(u1);
+                u = c.execute(cmd).fetchall()[0][0];
+                response[i] = '{}\n'.format(u);
         dbLock.release();
         return response;
-    except Error,msg:
+    except sqlite3.Error,msg:
         print(msg);
         dbLock.release();
-    print(stuff);
 
 def login(data, db):
     #log into the server
@@ -254,7 +253,6 @@ def clientthread(conn):
             conn.send(response + "\n");
             if(response == 'ack'):
                 user = data[1];
-        
     #infinite loop so that function do not terminate and thread do not end.
     #Receiving from client
     data = conn.recv(1024);
