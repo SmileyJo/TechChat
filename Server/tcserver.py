@@ -152,30 +152,32 @@ def recieve(data, db):
         return response;
     except sqlite3.Error,msg:
         print(msg);
-        dbLock.release();
+        dbLock.realease();
 
 
 
 def new_user(data, db):
     #creates a new user and stores it into the database
     #command syntax: Add User:email:username:password
-
-    email = data[1].strip();
-    username = data[2].strip();
-    password = data[3].strip();
-    newUser = (str(username), str(password), str(email))
-    c = db.cursor();
-    dbLock.acquire(true,);
-    if(username == (c.execute('select Username from Users where Username="{}"'.format(username)).fetchall()[0][0])):
-        conn.send('Username already exists.\n');
-        db.rollback();
-        dbLock.release();
-        return 'fail';
-        
-    c.execute("insert into Users(Username, Password, Email) VALUES(?, ?, ?)", newUser);
-    db.commit();
-    dbLock.release();
-    return 'ack';
+	
+	if(len(data) == 4):
+		try:
+			email = data[1].strip();
+			username = data[2].strip();
+			password = data[3].strip();
+			newUser = (str(username), str(password), str(email))
+			c = db.cursor();
+			dbLock.acquire(true,);
+			c.execute("insert into Users(Username, Password, Email) VALUES(?, ?, ?)", newUser);
+			db.commit();
+		except sqlite3.IntegrityError:
+			conn.send('Username already exists.\n');
+			db.rollback();
+			dbLock.release();
+			return 'fail';
+			
+		dbLock.release();
+		return 'ack';
 
 def conversation(data, db):
     #Syntax: Conversation Request:user
