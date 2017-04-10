@@ -203,7 +203,7 @@ def conversation(data, db):
             else:
                 cmd = 'select Username from Users where User_ID={}'.format(u1);
                 u = c.execute(cmd).fetchall()[0][0];
-                response[i] = '{}\n'.format(u);
+                response[i] = '{}:'.format(u);
         dbLock.release();
         return response;
     except sqlite3.Error,msg:
