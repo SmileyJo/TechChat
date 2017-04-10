@@ -48,4 +48,21 @@
         android:layout_below="@+id/signIn"
         android:layout_centerHorizontal="true" />
 
+    <EditText
+        android:id="@+id/editPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:layout_below="@+id/editUsername"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/create"
+        android:layout_width="165dp"
+        android:layout_height="wrap_content"
+        android:text="create"
+        android:layout_above="@+id/usermessage1"
+        android:layout_alignEnd="@+id/usermessage1" />
+
 </RelativeLayout>
