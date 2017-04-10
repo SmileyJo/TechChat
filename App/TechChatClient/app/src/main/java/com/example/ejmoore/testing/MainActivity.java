@@ -40,7 +40,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         user = username.getText().toString();
 
         Button signIn = (Button) findViewById(R.id.signIn);
+        Button create = (Button) findViewById(R.id.create);
         signIn.setOnClickListener(this);
+        create.setOnClickListener(this);
 
     }
 
@@ -50,6 +52,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         switch (v.getId()) {
             case R.id.signIn:
+
+                System.out.println("Running Create User");
+                user = username.getText().toString();
+                pass = password.getText().toString();
+                creating = false;
+
+                login();
+
                 //checks to see if a new username needs to be made. if it does, it makes it.
                 if(user != StoredUsername && StoredUsername == null){
                     //FileOutput.writeFile("username.txt", user);
@@ -67,16 +77,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }
                 break;
             case R.id.create:
+                System.out.println("Running Create User");
                 user = username.getText().toString();
                 pass = password.getText().toString();
                 creating = true;
-                //Run create user code
-                creating = false;
+
+                login();
+
                 break;
         }
     }
 
-    public void getMessages() {
+    public void login() {
         Thread retrieve = null;
 
         class login implements Runnable {
@@ -93,16 +105,20 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     DataInputStream dataIn  = new DataInputStream(clientSocket.getInputStream());
 
                     if (creating) { //Create User, email:user:pass
+                        System.out.println("Creating");
                         dataOut.writeBytes("Add User:" + "yoloswagerino:" + user + ":" + pass);
 
                         String back = "";
 
                         byte[] temp = new byte[1];
-                        while (dataIn.read(temp) != -1) {
+                        for (int i = 0; i < 3; i++) {
+                            dataIn.read(temp);
                             back += (char) temp[0];
                         }
 
-                        if (back.equals("ACK")) {
+                        System.out.println("Response:" + back);
+
+                        if (back.equals("ack")) {
                             System.out.println("Successfully created a user");
                         } else {
                             System.out.println("Failed to create a user");
@@ -121,12 +137,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     String response = "";
 
                     byte[] temp = new byte[1];
-                    while (dataIn.read(temp) != -1) {
-                        System.out.println("Read in one character");
+                    for (int i = 0; i < 4; i++) {
+                        dataIn.read(temp);
+                        if (i == 0) {
+                            if (!creating) i++;
+                            else continue;
+                        }
                         response += (char) temp[0];
                     }
 
-                    if (response.equals("ACK")) {
+                    System.out.println("Response:" + response);
+
+                    if (response.equals("ack")) {
                         System.out.println("Successfully Logged In");
                         logging = true;
                     } else {
@@ -145,5 +167,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
         retrieve = new Thread(new login());
         retrieve.start();
 
+        try {
+            retrieve.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (logging) {
+            startActivity(new Intent(MainActivity.this, HomePage.class));
+        }
     }
 }
