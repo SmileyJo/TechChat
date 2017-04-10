@@ -20,7 +20,11 @@ import static java.lang.Thread.sleep;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     EditText username = null;
+    EditText password = null;
     String user = null;
+    String pass = null;
+    boolean creating = false;
+    boolean logging = false;
 
     String StoredUsername = null;
     //String[] StoredUsername = FileInput.readFile("username.txt");
@@ -31,6 +35,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
 
         username = (EditText)findViewById(R.id.editUsername);
+        password = (EditText)findViewById(R.id.editPassword);
         //user = username.toString().split(""); //converts the input value into an array of strings
         user = username.getText().toString();
 
@@ -61,6 +66,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     Toast.makeText(getApplicationContext(), "Wrong username. Try Again", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case R.id.create:
+                user = username.getText().toString();
+                pass = password.getText().toString();
+                creating = true;
+                //Run create user code
+                creating = false;
+                break;
         }
     }
 
@@ -80,15 +92,47 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     DataOutputStream dataOut = new DataOutputStream(clientSocket.getOutputStream());
                     DataInputStream dataIn  = new DataInputStream(clientSocket.getInputStream());
 
-                    dataOut.writeBytes("Login:");
+                    if (creating) { //Create User, email:user:pass
+                        dataOut.writeBytes("Add User:" + "yoloswagerino:" + user + ":" + pass);
 
-                    dataOut.writeBytes("Message Request:chicken"); //Temp Out message
-                    String msgData = "";
+                        String back = "";
+
+                        byte[] temp = new byte[1];
+                        while (dataIn.read(temp) != -1) {
+                            back += (char) temp[0];
+                        }
+
+                        if (back.equals("ACK")) {
+                            System.out.println("Successfully created a user");
+                        } else {
+                            System.out.println("Failed to create a user");
+                            return;
+                        }
+
+                        try {
+                            sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    dataOut.writeBytes("Login:" + user + ":" + pass);
+
+                    String response = "";
 
                     byte[] temp = new byte[1];
                     while (dataIn.read(temp) != -1) {
                         System.out.println("Read in one character");
-                        msgData += (char) temp[0];
+                        response += (char) temp[0];
+                    }
+
+                    if (response.equals("ACK")) {
+                        System.out.println("Successfully Logged In");
+                        logging = true;
+                    } else {
+                        System.out.println("Failed to Log In");
+                        logging = false;
+                        return;
                     }
 
                 } catch (IOException e) {
