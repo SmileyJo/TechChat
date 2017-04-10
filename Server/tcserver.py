@@ -160,53 +160,36 @@ def recieve(data, db):
 
         dbLock.release();
         return response;
-    except Error,msg:
+    except sqlite3.Error as msg:
         print(msg);
-        dbLock.release();
+        dbLock.realease();
 
 
 
 def new_user(data, db):
     #creates a new user and stores it into the database
     #command syntax: Add User:email:username:password
-
-    email = data[1].strip();
-    username = data[2].strip();
-    password = data[3].strip();
-    newUser = (str(username), str(password), str(email))
-    c = db.cursor();
-    dbLock.acquire(true,);
-    if(username == (c.execute('select Username from Users where Username="{}"'.format(username)).fetchall()[0][0])):
-        conn.send('Username already exists.\n');
-        db.rollback();
-        dbLock.release();
-        return 'fail';
-        
-    c.execute("insert into Users(Username, Password, Email) VALUES(?, ?, ?)", newUser);
-    db.commit();
-    dbLock.release();
-    return 'ack';
+	
+	if(len(data) == 4):
+		try:
+			email = data[1].strip();
+			username = data[2].strip();
+			password = data[3].strip();
+			newUser = (str(username), str(password), str(email))
+			c = db.cursor();
+			dbLock.acquire(true,);
+			c.execute("insert into Users(Username, Password, Email) VALUES(?, ?, ?)", newUser);
+			db.commit();
+		except sqlite3.IntegrityError:
+			conn.send('Username already exists.\n');
+			db.rollback();
+			dbLock.release();
+			return 'fail';
+			
+		dbLock.release();
+		return 'ack';
 
 def conversation(data, db):
-    #Syntax: Conversation Request:user
-    try:
-        user = data[1];
-        c = db.cursor();
-        cmd = 'select User_ID from Conversation where Username="{}"'.format(user);
-        dbLock.acquire(true,);
-        uid = c.execute(cmd).fetchall()[0][0];
-        cmd = 'select u_Two from Users where u_One={}'.format(uid);
-        convers = c.execute(cmd).fetchall()[0];#just the user ids
-        response = {};
-        for i in range 0 to len(convers):
-            cmd = 'select Username from Users where User_ID={}'.format(convers[i]);
-            u2 = c.execute(cmd).fetchall()[0][0];
-            response[i] = '{}'.format(u2);
-        dbLock.release();
-        return response;
-    except Error,msg:
-        print(msg);
-        dbLock.release();
     print(stuff);
 
 def login(data, db):
