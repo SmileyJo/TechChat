@@ -65,6 +65,7 @@ def send(data, db):
     #Send Message:from:to:msg
     if(len(data) != 4):
         conn.send('Illegal Argument Exception: 4 arguments expected');
+        return None;
     #we need to write the procedure for the server to execute
     #because sqlite3 doesn't support procedures
     sender = data[1].strip();
@@ -74,28 +75,31 @@ def send(data, db):
     #user table cs is different
     #to keep user table unlocked
     dbLock.acquire(true);
-    #"select * from people where name_last=:who and age=:age", {"who": who, "age": age}
-    senderR = c.execute('select User_ID from Users where Username="'+sender+'";').fetchall();
-    recieverR = c.execute('select User_ID from Users where Username="'+reciever+'";').fetchall();
-    #critical section
-    
-    conversations = c.execute('select c_ID from Conversation where (u_One=' + str(senderR[0][0])
-        + ' and u_Two=' + str(recieverR[0][0]) + ') or (u_One=' + str(recieverR[0][0]) + ' and u_Two='+str(senderR[0][0])+');').fetchall();
-    #multiple conversations found, throw an error
-    if(len(conversations) > 1):
-        print('Unexpected return value from Comversation table');
-    #no conversations found, add a new conversation and then insert relpy
-    elif(len(conversations) == 0):
-        c.execute('insert into Conversation(u_One, u_Two) values('+str(senderR[0][0])+', '+str(recieverR[0][0])+ ');');
+    try:
+        #"select * from people where name_last=:who and age=:age", {"who": who, "age": age}
+        senderR = c.execute('select User_ID from Users where Username="'+sender+'";').fetchall();
+        recieverR = c.execute('select User_ID from Users where Username="'+reciever+'";').fetchall();
+        #critical section
+        
         conversations = c.execute('select c_ID from Conversation where (u_One=' + str(senderR[0][0])
             + ' and u_Two=' + str(recieverR[0][0]) + ') or (u_One=' + str(recieverR[0][0]) + ' and u_Two='+str(senderR[0][0])+');').fetchall();
-        conver = conversations[0][0];
-        c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+str(conver)+', '+str(senderR[0][0])+', "'+msg+'");');
-    #one conversation found, insert reply
-    else:
-        conver = conversations[0][0];
-        c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+str(conver)+', '+str(senderR[0][0])+', "'+msg+'");');
-    
+        #multiple conversations found, throw an error
+        if(len(conversations) > 1):
+            print('Unexpected return value from Comversation table');
+        #no conversations found, add a new conversation and then insert relpy
+        elif(len(conversations) == 0):
+            c.execute('insert into Conversation(u_One, u_Two) values('+str(senderR[0][0])+', '+str(recieverR[0][0])+ ');');
+            conversations = c.execute('select c_ID from Conversation where (u_One=' + str(senderR[0][0])
+                + ' and u_Two=' + str(recieverR[0][0]) + ') or (u_One=' + str(recieverR[0][0]) + ' and u_Two='+str(senderR[0][0])+');').fetchall();
+            conver = conversations[0][0];
+            c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+str(conver)+', '+str(senderR[0][0])+', "'+msg+'");');
+        #one conversation found, insert reply
+        else:
+            conver = conversations[0][0];
+            c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+str(conver)+', '+str(senderR[0][0])+', "'+msg+'");');
+    except sqlite3.Error, msg:
+        print(msg);
+        dbLock.release();
     db.commit();
     dbLock.release();
     return None;
