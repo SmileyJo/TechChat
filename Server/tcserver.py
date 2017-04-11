@@ -189,7 +189,12 @@ def conversation(data, db):
         dbLock.acquire(true,);
         uid = c.execute(cmd).fetchall()[0][0];
         cmd = 'select c_ID from Conversation where u_One={0} or u_Two={0}'.format(uid);
-        convers = c.execute(cmd).fetchall()[0];#just the user ids
+        convers = c.execute(cmd).fetchall();#just the user ids
+        if(len(convers) == 0):
+            dbLock.release();
+            return '';
+        else:
+            convers = convers[0];
         response = {};
         for i in range (0, len(convers)):
             cmd = 'select u_One from Conversation where c_ID={}'.format(convers[i]);
