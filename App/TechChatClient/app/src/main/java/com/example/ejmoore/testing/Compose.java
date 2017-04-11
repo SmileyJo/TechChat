@@ -28,12 +28,15 @@ public class Compose extends Activity implements View.OnClickListener {
     private ArrayAdapter<String> adapter;
     EditText type1 = null;  //these are made global variables for the purpose of calling them in multiple methods
     String packet = "";
+    ListView messagelist;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("Compose Page Reached");
+
+        setTitle(User.convoUser);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose);
@@ -44,13 +47,13 @@ public class Compose extends Activity implements View.OnClickListener {
         Button send = (Button) findViewById(R.id.send);
         send.setOnClickListener(this);
 
-        Button phoneBook = (Button) findViewById(R.id.phonebook);
-        phoneBook.setOnClickListener(this);
+//        Button phoneBook = (Button) findViewById(R.id.phonebook);
+//        phoneBook.setOnClickListener(this);
 
         type1 = (EditText) findViewById(R.id.type);  //sets the global variables
         packet = type1.getText().toString();
 
-        ListView messagelist = (ListView) findViewById(R.id.messages);  //establishes the list veiw
+        messagelist = (ListView) findViewById(R.id.messages);  //establishes the list veiw
 
         System.out.println("after listview but before arrayadapter");
         //indicates the list veiw can pull from the arraylist input_messages
@@ -78,9 +81,9 @@ public class Compose extends Activity implements View.OnClickListener {
                     DataOutputStream dataOut = new DataOutputStream(clientSocket.getOutputStream());
                     DataInputStream  dataIn  = new DataInputStream(clientSocket.getInputStream());
 
-                    dataOut.writeBytes("Login:danej:danej");
+                    dataOut.writeBytes("Login:" + User.user + ":" + User.password);
 
-                    dataOut.writeBytes("Message Request:chicken"); //Temp Out message
+                    dataOut.writeBytes("Message Request:" + User.convoUser); //Temp Out message
                     String msgData = "";
 
                     byte[] temp = new byte[1];
@@ -96,7 +99,8 @@ public class Compose extends Activity implements View.OnClickListener {
                     messages.clear();
 
                     for (int i = 0; i < tempMessages.length; i++) {
-                        messages.add(tempMessages[i]);
+                        if (tempMessages[i].contains(":"))
+                            messages.add(tempMessages[i].split(":")[2]);
                     }
 
                 } catch (IOException e) {
@@ -104,6 +108,7 @@ public class Compose extends Activity implements View.OnClickListener {
                 }
 
                 //displayMessage();
+                testMessages = new String[messages.size()];
                 int i = 0;
                 for (String s : messages) {
                     testMessages[i++] = s;
@@ -116,8 +121,9 @@ public class Compose extends Activity implements View.OnClickListener {
         retrieve.start();
 
         try {
-            sleep(1);
+            retrieve.join();
         } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         displayMessage();
@@ -127,6 +133,9 @@ public class Compose extends Activity implements View.OnClickListener {
     public void displayMessage(){
         //input_messages.add(string);
         //testMessages[2] = string;
+
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, testMessages);
+        messagelist.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
     
@@ -173,9 +182,9 @@ public class Compose extends Activity implements View.OnClickListener {
                     System.out.println("Creating new Socket");
                     DataOutputStream send = new DataOutputStream(clientSocket.getOutputStream());
 
-                    send.writeBytes("Login:danej:danej");
+                    send.writeBytes("Login:" + User.user + ":" + User.password);
 
-                    packet = "Send Message:" + "danej" + ":" +"chicken" + ":" + packet;
+                    packet = "Send Message:" + User.user + ":" + User.convoUser + ":" + packet;
                     System.out.println("Sending: " + packet);
                     send.writeBytes(packet);
                 } catch (IOException e) {

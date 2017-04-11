@@ -174,6 +174,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
 
         if (logging) {
+            User.setupUser(user,pass);
             startActivity(new Intent(MainActivity.this, HomePage.class));
         }
     }
