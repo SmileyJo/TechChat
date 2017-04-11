@@ -174,7 +174,7 @@ def new_user(data, db):
 			conn.send('Username already exists.\n');
 			db.rollback();
 			dbLock.release();
-			return 'fail';
+			return 'fal';
 			
 		dbLock.release();
 		return 'ack';
@@ -203,7 +203,7 @@ def conversation(data, db):
             else:
                 cmd = 'select Username from Users where User_ID={}'.format(u1);
                 u = c.execute(cmd).fetchall()[0][0];
-                response[i] = '{}\n'.format(u);
+                response[i] = '{}:'.format(u);
         dbLock.release();
         return response;
     except sqlite3.Error,msg:
@@ -221,7 +221,7 @@ def login(data, db):
     dbLock.release();
     res = db.cursor().execute(cmd).fetchall();
     if(len(res) > 1 or len(res) == 0):
-        return "fail";
+        return "fal";
     else:
         return "ack";
 
