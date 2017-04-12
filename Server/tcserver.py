@@ -10,10 +10,10 @@ import signal;
 from threading import Lock;
 from thread import *;
 #proper command line start: ./tcserver.py <port>
-if(len(sys.argv) < 2){
+if(len(sys.argv) < 2):
     print 'Usage: python tcserver.py <port>';
     sys.exit(0);
-}
+
 
 #right now its hosted on local host, so on a tech ip, it should
 #be accessable to any user
@@ -36,38 +36,44 @@ except socket.error , msg:
      
 print 'Socket bind complete';
 
-
 end = 1;
 
-
-
 def dieQuietly(_signo, _stackframe):
-    print("Sigterm Caught");
     s.close();
     sys.exit(0);
 
 signal.signal(signal.SIGTERM, dieQuietly);
 
 def status(data, db):
-    #query the db for login info matching
-    #the inputted username and pw
-    c = db.cursor();
-    return None;
-
+	#(0): Online. (1): Away (Not near phone). (2): Busy (Will check when I can). (3): Appear Offline. (Still in app). (4): Log Out.
+	#Change Status:user:status
+	if (len(data) != 3):
+		conn.send('Illegal Argument Exception: 3 arguments expected.\n');
+	dbLock.acquire(true);
+	user = data[1].strip();
+	status = data[2].strip();
+	c = db.cursor();
+	c.execute('UPDATE Users SET status = '+str(status)+' WHERE Username = "'+user+'";');
+	db.commit();
+	if (status == '4'):
+		return None;
+	return 'ack';
+	
 def exit(data, db):
     #query the db for login info matching
     #the inputted username and pw
     return None;
 
 def send(data, db):
-    c = db.cursor();
     #query the db for login info matching
     #the inputted username and pw
     #Send Message:from:to:msg
     if(len(data) != 4):
-        conn.send('Illegal Argument Exception: 4 arguments expected');
+        conn.send('Illegal Argument Exception: 4 arguments expected\n');
+        return None;
     #we need to write the procedure for the server to execute
     #because sqlite3 doesn't support procedures
+	c = db.cursor();
     sender = data[1].strip();
     reciever = data[2].strip();
     msg = data[3].strip();
@@ -75,38 +81,31 @@ def send(data, db):
     #user table cs is different
     #to keep user table unlocked
     dbLock.acquire(true);
-    #"select * from people where name_last=:who and age=:age", {"who": who, "age": age}
-    senderR = c.execute('select User_ID from Users where Username="'+sender+'";').fetchall();
-    recieverR = c.execute('select User_ID from Users where Username="'+reciever+'";').fetchall();
-    
-    #c_ID  INTEGER      PRIMARY KEY
-    #                   NOT NULL,
-    #u_One INT (11)     NOT NULL
-    #                   REFERENCES Users (User_ID),
-    #u_Two INT (11)     REFERENCES Users (User_ID) 
-    #                   NOT NULL,
-    #time  INT (11)     DEFAULT NULL,
-    #ip    VARCHAR (30) DEFAULT NULL
-
-    #critical section
-    
-    conversations = c.execute('select c_ID from Conversation where (u_One=' + str(senderR[0][0])
-        + ' and u_Two=' + str(recieverR[0][0]) + ') or (u_One=' + str(recieverR[0][0]) + ' and u_Two='+str(senderR[0][0])+');').fetchall();
-    #multiple conversations found, throw an error
-    if(len(conversations) > 1):
-        print('Unexpected return value from Comversation table');
-    #no conversations found, add a new conversation and then insert relpy
-    elif(len(conversations) == 0):
-        c.execute('insert into Conversation(u_One, u_Two) values('+str(senderR[0][0])+', '+str(recieverR[0][0])+ ');');
+    try:
+        #"select * from people where name_last=:who and age=:age", {"who": who, "age": age}
+        senderR = c.execute('select User_ID from Users where Username="'+sender+'";').fetchall();
+        recieverR = c.execute('select User_ID from Users where Username="'+reciever+'";').fetchall();
+        #critical section
+        
         conversations = c.execute('select c_ID from Conversation where (u_One=' + str(senderR[0][0])
             + ' and u_Two=' + str(recieverR[0][0]) + ') or (u_One=' + str(recieverR[0][0]) + ' and u_Two='+str(senderR[0][0])+');').fetchall();
-        conver = conversations[0][0];
-        c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+str(conver)+', '+str(senderR[0][0])+', "'+msg+'");');
-    #one conversation found, insert reply
-    else:
-        conver = conversations[0][0];
-        c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+str(conver)+', '+str(senderR[0][0])+', "'+msg+'");');
-    
+        #multiple conversations found, throw an error
+        if(len(conversations) > 1):
+            print('Unexpected return value from Comversation table');
+        #no conversations found, add a new conversation and then insert relpy
+        elif(len(conversations) == 0):
+            c.execute('insert into Conversation(u_One, u_Two) values('+str(senderR[0][0])+', '+str(recieverR[0][0])+ ');');
+            conversations = c.execute('select c_ID from Conversation where (u_One=' + str(senderR[0][0])
+                + ' and u_Two=' + str(recieverR[0][0]) + ') or (u_One=' + str(recieverR[0][0]) + ' and u_Two='+str(senderR[0][0])+');').fetchall();
+            conver = conversations[0][0];
+            c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+str(conver)+', '+str(senderR[0][0])+', "'+msg+'");');
+        #one conversation found, insert reply
+        else:
+            conver = conversations[0][0];
+            c.execute('insert into Reply(c_fk_ID, user_fk_ID, reply) values('+str(conver)+', '+str(senderR[0][0])+', "'+msg+'");');
+    except sqlite3.Error, msg:
+        print(msg);
+        dbLock.release();
     db.commit();
     dbLock.release();
     return None;
@@ -161,51 +160,95 @@ def recieve(data, db):
 
         dbLock.release();
         return response;
-    except Error,msg:
+    except sqlite3.Error,msg:
         print(msg);
         dbLock.realease();
 
 
 
 def new_user(data, db):
-    #create a new user
-    #add user;username;password
-    if(len(data) != 4):
-       conn.send('Illegal Argument Exception: 4 arguments expected');
+    #creates a new user and stores it into the database
+    #command syntax: Add User:email:username:password
+	
+	if(len(data) == 4):
+		try:
+			email = data[1].strip();
+			username = data[2].strip();
+			password = data[3].strip();
+			newUser = (str(username), str(password), str(email))
+			c = db.cursor();
+			dbLock.acquire(true,);
+			c.execute("insert into Users(Username, Password, Email) VALUES(?, ?, ?)", newUser);
+			db.commit();
+		except sqlite3.IntegrityError:
+			conn.send('Username already exists.\n');
+			db.rollback();
+			dbLock.release();
+			return 'fail';
+			
+		dbLock.release();
+		return 'ack';
 
-    c = db.cursor();
-    email = data[1].strip();
-    username = data[2].strip();
-    password = data[3].strip();
-    status = 0; #default status to online
-    
-    dbLock.acquire(true,);
-    #needs to be surrounded in try:catch
-    c.execute('insert into Users(Username, Password, Email, Status) values('+username+','+password+','+email+','+status+');');
-    dbLock.release();
-    return none;
+def conversation(data, db):
+    #Syntax: Conversation Request:user
+    #return syntax: user2
+    try:
+        user = data[1].strip();
+        c = db.cursor();
+        cmd = 'select User_ID from Users where Username="{}"'.format(user);
+        dbLock.acquire(true,);
+        uid = c.execute(cmd).fetchall()[0][0];
+        cmd = 'select c_ID from Conversation where u_One={0} or u_Two={0}'.format(uid);
+        convers = c.execute(cmd).fetchall();#just the user ids
+        if(len(convers) == 0):
+            dbLock.release();
+            return '';
+        else:
+            convers = convers[0];
+        response = {};
+        for i in range (0, len(convers)):
+            cmd = 'select u_One from Conversation where c_ID={}'.format(convers[i]);
+            u1 = c.execute(cmd).fetchall()[0][0];
+            cmd = 'select u_Two from Conversation where c_ID={}'.format(convers[i]);
+            u2 = c.execute(cmd).fetchall()[0][0];
+            if(u1 == uid):
+                cmd = 'select Username from Users where User_ID={}'.format(u2);
+                u = c.execute(cmd).fetchall()[0][0];
+                response[i] = '{}'.format(u);
+            else:
+                cmd = 'select Username from Users where User_ID={}'.format(u1);
+                u = c.execute(cmd).fetchall()[0][0];
+                response[i] = '{}:'.format(u);
+        dbLock.release();
+        return response;
+    except sqlite3.Error,msg:
+        print(msg);
+        dbLock.release();
 
 def login(data, db):
     #log into the server
     #command syntax: Login:user:password
     print('login called');
+    dbLock.acquire(true,);
     username = data[1].strip();
     password = data[2].strip();
     cmd = "select User_ID from Users where Username='{}' and Password='{}'".format(username,password);
+    dbLock.release();
     res = db.cursor().execute(cmd).fetchall();
     if(len(res) > 1 or len(res) == 0):
-        return "fail";
+        return "fal";
     else:
         return "ack";
 
 #language of commands
-commands = {'Change Status'     : status,           #changes status of the user on the database
-            'exit'              : exit,             #exits from the server and destroys the thread
-                                                    #also sets status to offline
-            'Send Message'      : send,             #sends a message from the user to another user
-            'Message Request'   : recieve,          #the client asks for all recieved messages
-            'Add User'          : new_user,
-            'Login'             : login
+commands = {'Change Status'         : status,           #changes status of the user on the database
+            'exit'                  : exit,             #exits from the server and destroys the thread
+                                                        #also sets status to offline
+            'Send Message'          : send,             #sends a message from the user to another user
+            'Message Request'       : recieve,          #the client asks for all recieved messages
+            'Add User'              : new_user,
+            'Login'                 : login,
+            'Conversation Request'  : conversation
             };
 
 #Function for handling connections. This will be used to create threads
@@ -220,14 +263,13 @@ def clientthread(conn):
     while(user == ""):
         data = conn.recv(1024);
         command = data.split(':');
-        if(command[0].strip() != 'Login'):
+        if(command[0].strip() != 'Login' and command[0].strip() != 'Add User'):
             conn.send('Must log in before using the app\n');
         else:
             response = commands[command[0]](command, database);
             conn.send(response + "\n");
             if(response == 'ack'):
                 user = data[1];
-        
     #infinite loop so that function do not terminate and thread do not end.
     #Receiving from client
     data = conn.recv(1024);
@@ -257,7 +299,7 @@ def debugthread():
     c = database.cursor();
     try:
              # c.execute('select User_ID from Users where Username="chicken";')
-        data = c.execute('select User_ID from Users where Username="chicken"');
+        data = c.execute('select asdf from Users where Username="chicken"');
         print(data.fetchall());
     except sqlite3.Error, msg:
         print('error in the database');
