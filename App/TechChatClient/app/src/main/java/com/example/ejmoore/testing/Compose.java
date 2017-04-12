@@ -24,7 +24,7 @@ import static java.lang.Thread.sleep;
 public class Compose extends Activity implements View.OnClickListener {
 
     private ArrayList<String> input_messages = new ArrayList<String>();
-    String[] testMessages = {"","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
+    String[] testMessages = {""};
     private ArrayAdapter<String> adapter;
     EditText type1 = null;  //these are made global variables for the purpose of calling them in multiple methods
     String packet = "";
@@ -72,7 +72,7 @@ public class Compose extends Activity implements View.OnClickListener {
             public void run() {
                 ArrayList<String> messages = new ArrayList<String>();
 
-                String ip = "10.0.2.2";
+                String ip = "141.219.247.142";
                 int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
@@ -100,8 +100,13 @@ public class Compose extends Activity implements View.OnClickListener {
 
                     for (int i = 0; i < tempMessages.length; i++) {
                         if (tempMessages[i].contains(":"))
-                            messages.add(tempMessages[i].split(":")[2]);
+                            if (tempMessages[i].split(":").length < 3){
+                                messages.add("");
+                            } else
+                                messages.add(tempMessages[i].split(":")[2]);
                     }
+
+                    clientSocket.close();
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -175,7 +180,11 @@ public class Compose extends Activity implements View.OnClickListener {
                 EditText message = (EditText) findViewById(R.id.type);
                 String packet = message.getText().toString();
 
-                String ip = "10.0.2.2";
+                if (packet.equals("")) {
+                    return;
+                }
+
+                String ip = "141.219.247.142";
                 int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
@@ -187,6 +196,8 @@ public class Compose extends Activity implements View.OnClickListener {
                     packet = "Send Message:" + User.user + ":" + User.convoUser + ":" + packet;
                     System.out.println("Sending: " + packet);
                     send.writeBytes(packet);
+
+                    clientSocket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -196,6 +207,12 @@ public class Compose extends Activity implements View.OnClickListener {
         Thread send = null;
         send = new Thread(new sendThread());
         send.start();
+
+        try {
+            send.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         message.setText("");
 

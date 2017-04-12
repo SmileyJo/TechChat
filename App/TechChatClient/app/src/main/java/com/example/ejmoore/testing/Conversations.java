@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import static java.lang.Thread.sleep;
-
 public class Conversations extends Activity {
 
     ArrayList<String> conversations = new ArrayList<String>();
@@ -64,7 +62,7 @@ public class Conversations extends Activity {
             @Override
             public void run() {
 
-                String ip = "10.0.2.2";
+                String ip = "141.219.247.142";
                 int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
