@@ -62,7 +62,7 @@ public class Conversations extends Activity {
             @Override
             public void run() {
 
-                String ip = "10.0.2.2";
+                String ip = "141.219.247.142";
                 int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
