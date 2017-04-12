@@ -258,12 +258,12 @@ def clientthread(conn):
         data = conn.recv(1024);
         command = data.split(':');
         if(command[0].strip() != 'Login' and command[0].strip() != 'Add User'):
-            conn.send('Must log in before using the app\n');
+            conn.send('fal');
         else:
             response = commands[command[0]](command, database);
             conn.send(response + "\n");
             if(response == 'ack'):
-                user = data[1];
+                user = command[1];
     #infinite loop so that function do not terminate and thread do not end.
     #Receiving from client
     data = conn.recv(1024);
@@ -318,6 +318,9 @@ while (end == 1):
     print 'Connected with ' + addr[0] + ':' + str(addr[1]);
      
     #start new thread takes 1st argument as a function name to be run, second is the tuple of arguments to the function.
-    start_new_thread(clientthread ,(conn,));
+    try:
+        start_new_thread(clientthread ,(conn,));
+    except socket.error, msg:
+        print("BUGGS\n");
  
 s.close()
