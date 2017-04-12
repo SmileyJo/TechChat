@@ -95,7 +95,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             @Override
             public void run() {
 
-                String ip = "141.219.247.142";
+                String ip = "141.219.226.237";
                 int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
@@ -150,9 +150,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                     if (response.equals("ack")) {
                         System.out.println("Successfully Logged In");
+                        dataOut.writeBytes("Exit");
                         logging = true;
                     } else {
                         System.out.println("Failed to Log In");
+                        dataOut.writeBytes("Exit");
                         logging = false;
                         return;
                     }

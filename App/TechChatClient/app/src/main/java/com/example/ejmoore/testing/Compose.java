@@ -72,7 +72,7 @@ public class Compose extends Activity implements View.OnClickListener {
             public void run() {
                 ArrayList<String> messages = new ArrayList<String>();
 
-                String ip = "141.219.247.142";
+                String ip = "141.219.226.237";
                 int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
@@ -184,7 +184,7 @@ public class Compose extends Activity implements View.OnClickListener {
                     return;
                 }
 
-                String ip = "141.219.247.142";
+                String ip = "141.219.226.237";
                 int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);

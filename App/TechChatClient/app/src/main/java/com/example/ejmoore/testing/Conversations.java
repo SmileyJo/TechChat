@@ -43,6 +43,9 @@ public class Conversations extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String) parent.getItemAtPosition(position);
                 System.out.println("Item contents: " + item);
+                if (item.equals("New Conversation")) {
+
+                }
                 User.initiateConvo(item);
                 startActivity(new Intent(Conversations.this, Compose.class));
             }
@@ -62,7 +65,7 @@ public class Conversations extends Activity {
             @Override
             public void run() {
 
-                String ip = "141.219.247.142";
+                String ip = "141.219.226.237";
                 int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
@@ -98,7 +101,7 @@ public class Conversations extends Activity {
                     String otherUser = "";
                     while (dataIn.read(temp) != -1) {
                         char c = (char) temp[0];
-                        System.out.println("Readingin character: " + c);
+                        //System.out.println("Readingin character: " + c);
                         if (c == '\n' || c == ':') {
                             System.out.println(otherUser);
                             if (!otherUser.equals("")) conversations.add(otherUser);
@@ -110,6 +113,7 @@ public class Conversations extends Activity {
                     }
                     System.out.println(otherUser);
                     conversations.add(otherUser);
+                    conversations.add("New Conversation");
 
                 } catch (IOException e) {
                     e.printStackTrace();
