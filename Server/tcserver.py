@@ -260,7 +260,10 @@ def clientthread(conn):
     user = "";
     while(user == ""):
         data = conn.recv(1024);
+        if (len(data) == 1):
+            data = data + conn.recv(1024);
         command = data.split(':');
+        print(command[0]);
         if(command[0].strip() != 'Login' and command[0].strip() != 'Add User'):
             conn.send('fal');
         else:
