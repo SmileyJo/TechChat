@@ -224,15 +224,19 @@ def login(data, db):
     #command syntax: Login:user:password
     print('login called');
     dbLock.acquire(true,);
-    username = data[1].strip();
-    password = data[2].strip();
-    cmd = "select User_ID from Users where Username='{}' and Password='{}'".format(username,password);
-    dbLock.release();
-    res = db.cursor().execute(cmd).fetchall();
-    if(len(res) > 1 or len(res) == 0):
+    try:
+        username = data[1].strip();
+        password = data[2].strip();
+        cmd = "select User_ID from Users where Username='{}' and Password='{}'".format(username,password);
+        dbLock.release();
+        res = db.cursor().execute(cmd).fetchall();
+        if(len(res) > 1 or len(res) == 0):
+            return "fal";
+        else:
+            return "ack";
+    except sqlite3.Error,msg:
+        dbLock.release();
         return "fal";
-    else:
-        return "ack";
 
 #language of commands
 commands = {'Change Status'         : status,           #changes status of the user on the database
