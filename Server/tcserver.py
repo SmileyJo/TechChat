@@ -102,7 +102,7 @@ def send(data, db):
         dbLock.release();
     db.commit();
     dbLock.release();
-    return None;
+    return "ack";
     #end critical section
 
 def recieve(data, db):
