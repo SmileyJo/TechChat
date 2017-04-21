@@ -1,3 +1,9 @@
+/*name: Compose Page
+authors: James G, Jo T.
+purpose:  This page allows the user to veiw their list of contacts or "Friends"
+this page does not currently function,norisit actively used
+*/
+
 package com.example.ejmoore.testing;
 
 import android.app.Activity;
