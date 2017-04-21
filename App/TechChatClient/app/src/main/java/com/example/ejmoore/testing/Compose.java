@@ -1,3 +1,13 @@
+/*
+name: Compose Page
+
+authors: James G, Eric M, Jo T.
+
+purpose:  This page allows the user to send and receive messages from other users. Messages appear in a list veiw. 
+includes socket connections to server and access to database in order to retreive messages. 
+*/
+
+
 package com.example.ejmoore.testing;
 
 import android.app.Activity;
@@ -23,10 +33,10 @@ import static java.lang.Thread.sleep;
 
 public class Compose extends Activity implements View.OnClickListener {
 
-    private ArrayList<String> input_messages = new ArrayList<String>();
+    private ArrayList<String> input_messages = new ArrayList<String>(); //holds messages 
     String[] testMessages = {""};
     private ArrayAdapter<String> adapter;
-    EditText type1 = null;  //these are made global variables for the purpose of calling them in multiple methods
+    EditText type1 = null;  //allow you to edit string inputs
     String packet = "";
     ListView messagelist;
 
@@ -41,14 +51,9 @@ public class Compose extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose);
 
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
 
         Button send = (Button) findViewById(R.id.send);
         send.setOnClickListener(this);
-
-//        Button phoneBook = (Button) findViewById(R.id.phonebook);
-//        phoneBook.setOnClickListener(this);
 
         type1 = (EditText) findViewById(R.id.type);  //sets the global variables
         packet = type1.getText().toString();
@@ -64,7 +69,7 @@ public class Compose extends Activity implements View.OnClickListener {
 
     }
 
-    public void getMessages() {
+    public void getMessages() { //pulls incoming messages from server
         Thread retrieve = null;
 
         class get implements Runnable {
@@ -72,7 +77,7 @@ public class Compose extends Activity implements View.OnClickListener {
             public void run() {
                 ArrayList<String> messages = new ArrayList<String>();
 
-                String ip = "141.219.226.237";
+                String ip = "141.219.226.237"; // connects to server
                 int portNumber = 8888;
                 try {
                     Socket clientSocket = new Socket(ip,portNumber);
@@ -112,7 +117,7 @@ public class Compose extends Activity implements View.OnClickListener {
                     e.printStackTrace();
                 }
 
-                //displayMessage();
+               
                 testMessages = new String[messages.size()];
                 int i = 0;
                 for (String s : messages) {
@@ -151,17 +156,14 @@ public class Compose extends Activity implements View.OnClickListener {
             case R.id.send:
                 System.out.println("start send");
                 //puts message from textbox into top or bottom of list veiw
-                //EditText message = (EditText) findViewById(R.id.type);
-                //String packet = message.getText().toString();
-                //displayMessage(packet);
 
                 //sends message encased in text box.
                 sendMessage();
-                //getMessages();
+            
 
                 break;
 
-            case R.id.phonebook: //got to phonebook list. for some reason this still does not work.
+            case R.id.phonebook: //got to phonebook
                 startActivity(new Intent(Compose.this, phoneBook.class));
                 break;
         }
@@ -170,7 +172,7 @@ public class Compose extends Activity implements View.OnClickListener {
         //alongside messages input from "send" button
     }
 
-    public void sendMessage() {
+    public void sendMessage() { //puts data into database to be retreived by other user
         EditText message = (EditText) findViewById(R.id.type);
 
         class sendThread implements Runnable {
