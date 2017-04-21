@@ -1,3 +1,11 @@
+
+/*name: settings page
+authors: James G, Eric M, Jo T.
+purpose:  This page allows the user to write an auto response when the blobkbutotn is on.
+italsop deleted messages after a certain count.
+thispageis unfinished and does not functionally work
+*/
+
 package com.example.ejmoore.testing;
 
 import android.app.Activity;
