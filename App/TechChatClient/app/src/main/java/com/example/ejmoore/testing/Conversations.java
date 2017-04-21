@@ -2,7 +2,7 @@
 /*name: Conversations page
 authors: James G, Eric M, Jo T.
 purpose:  This page allows the user to view recent conversations that they have had. and to be able to select
-and visit conversations
+and visit conversations. also to send messages.
 */
 
 package com.example.ejmoore.testing;
