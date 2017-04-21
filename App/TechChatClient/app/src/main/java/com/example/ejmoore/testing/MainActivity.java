@@ -1,4 +1,9 @@
 
+/*name: Main Acivity(Login page)
+authors: James G, Eric M, Jo T.
+purpose:  This page allows the user to log in to their user profile. if your user file does not exist
+then it prompts you to create a profile
+*/
 package com.example.ejmoore.testing;
 
 import android.app.Activity;
@@ -30,13 +35,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
     //String[] StoredUsername = FileInput.readFile("username.txt");
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) { //all the fun buttons and inputs you see
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         username = (EditText)findViewById(R.id.editUsername);
         password = (EditText)findViewById(R.id.editPassword);
-        //user = username.toString().split(""); //converts the input value into an array of strings
         user = username.getText().toString();
 
         Button signIn = (Button) findViewById(R.id.signIn);
@@ -62,7 +66,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                 //checks to see if a new username needs to be made. if it does, it makes it.
                 if(user != StoredUsername && StoredUsername == null){
-                    //FileOutput.writeFile("username.txt", user);
                     Toast.makeText(getApplicationContext(), "Congrats, "+
                             username.getText()+"! Your Username was made. /n " +
                             "Login again to go to home page.", Toast.LENGTH_SHORT).show();
@@ -91,7 +94,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public void login() {
         Thread retrieve = null;
 
-        class login implements Runnable {
+        class login implements Runnable { //port connection so the user is added to and retreiving from the server
             @Override
             public void run() {
 
@@ -106,7 +109,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                     if (creating) { //Create User, email:user:pass
                         System.out.println("Creating");
-                        dataOut.writeBytes("Add User:" + "yoloswagerino:" + user + ":" + pass);
+                        dataOut.writeBytes("Add User:" + "yoloswagerino:" + user + ":" + pass); //test username
 
                         String back = "";
 
@@ -119,7 +122,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         System.out.println("Response:" + back);
 
                         if (back.equals("ack")) {
-                            System.out.println("Successfully created a user");
+                            System.out.println("Successfully created a user"); //lets you know if connection to the server allowed you to make your profile
                         } else {
                             System.out.println("Failed to create a user");
                             return;
@@ -177,7 +180,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         if (logging) {
             User.setupUser(user,pass);
-            startActivity(new Intent(MainActivity.this, HomePage.class));
+            startActivity(new Intent(MainActivity.this, HomePage.class)); //takes you to the home page on login
         }
     }
 }
