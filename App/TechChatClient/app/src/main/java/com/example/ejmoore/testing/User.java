@@ -1,3 +1,8 @@
+/*name: user class
+authors: Eric M
+purpose:  This establishes a new user when one is created on the login page
+it sets up a profile with associated data like conversations */
+
 package com.example.ejmoore.testing;
 
 import android.os.AsyncTask;
@@ -20,12 +25,12 @@ public class User{
 
     static String convoUser;
 
-    public static void setupUser(String user, String password) {
+    public static void setupUser(String user, String password) { //establishes the user to be interpreted by the database
         User.user = user;
         User.password = password;
     }
 
-    public static void initiateConvo(String user) {
+    public static void initiateConvo(String user) { //establishes that the user can partake in conversations
         User.convoUser = user;
     }
 }
