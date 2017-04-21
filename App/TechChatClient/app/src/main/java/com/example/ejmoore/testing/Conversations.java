@@ -1,3 +1,10 @@
+
+/*name: Conversations page
+authors: James G, Eric M, Jo T.
+purpose:  This page allows the user to view recent conversations that they have had. and to be able to select
+and visit conversations
+*/
+
 package com.example.ejmoore.testing;
 
 import android.app.LauncherActivity;
@@ -22,7 +29,7 @@ public class Conversations extends Activity {
     String[] arr = {"","","","",""};
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) { //establishes the view
         super.onCreate(savedInstanceState);
         setContentView(R.layout.conversations);
 
@@ -40,6 +47,7 @@ public class Conversations extends Activity {
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
+            //allows the conversation in the listview to be "clickable" takes you to their conversation
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String) parent.getItemAtPosition(position);
                 System.out.println("Item contents: " + item);
@@ -55,13 +63,13 @@ public class Conversations extends Activity {
     }
 
 
-    public void getConvos() {
+    public void getConvos() {  //pulls conversations specific to the user
         System.out.println("Getting Convos");
 
 
         Thread thread = null;
 
-        class convoRequest implements Runnable {
+        class convoRequest implements Runnable { //allows log in, and then retrives profile info
             @Override
             public void run() {
 
@@ -74,7 +82,7 @@ public class Conversations extends Activity {
                     DataOutputStream dataOut = new DataOutputStream(clientSocket.getOutputStream());
                     DataInputStream dataIn  = new DataInputStream(clientSocket.getInputStream());
 
-                    dataOut.writeBytes("Login:" + User.user + ":" + User.password);
+                    dataOut.writeBytes("Login:" + User.user + ":" + User.password); //checks the username in order to pull apropriet data
                     String response = "";
 
                     byte[] temp = new byte[1];
@@ -85,7 +93,7 @@ public class Conversations extends Activity {
 
                     System.out.println("Response:" + response);
 
-                    if (response.equals("ack")) {
+                    if (response.equals("ack")) { //makes sure your profile exists. otherwise denies access.
                         System.out.println("Successfully Logged In");
                     } else {
                         System.out.println("Failed to Log In");
@@ -98,10 +106,10 @@ public class Conversations extends Activity {
 
                     conversations.clear();
 
-                    String otherUser = "";
+                    String otherUser = ""; //bellow adds a new convoif the "other user" does not already exist
                     while (dataIn.read(temp) != -1) {
                         char c = (char) temp[0];
-                        //System.out.println("Readingin character: " + c);
+                        
                         if (c == '\n' || c == ':') {
                             System.out.println(otherUser);
                             if (!otherUser.equals("")) conversations.add(otherUser);
@@ -113,7 +121,7 @@ public class Conversations extends Activity {
                     }
                     System.out.println(otherUser);
                     conversations.add(otherUser);
-                    conversations.add("New Conversation");
+                    conversations.add("New Conversation"); //creates your new conversation
 
                 } catch (IOException e) {
                     e.printStackTrace();
