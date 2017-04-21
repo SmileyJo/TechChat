@@ -1,3 +1,9 @@
+/*packagename: home page
+authors: James G, Eric M, Jo T.
+purpose:  This page allows the user to veiwtheir "button" options.As it stands, only the "compose" page functions
+
+*/
+
 package com.example.ejmoore.testing;
 
 import android.app.Activity;
@@ -23,7 +29,8 @@ public class HomePage extends Activity implements View.OnClickListener {
         the class has "implements view.onclicklistener" to accomodate
         multiple buttons.
          */
-
+        
+        //the items listed bellow are clickable buttons to take you to varying pages
         Button conversations = (Button) findViewById(R.id.conversations);
         conversations.setOnClickListener(this);
 
@@ -33,7 +40,6 @@ public class HomePage extends Activity implements View.OnClickListener {
         Button settings = (Button) findViewById(R.id.Settings);
         settings.setOnClickListener(this);
 
-        //People.setAdapter(new listAdapter(this, R.layout.list_layout, data));
     }
 
 
@@ -44,65 +50,20 @@ public class HomePage extends Activity implements View.OnClickListener {
         switch (v.getId()) { //allows the switching of jobs based on id of button
 
             case R.id.conversations:
-                startActivity(new Intent(HomePage.this, Conversations.class));
+                startActivity(new Intent(HomePage.this, Conversations.class));//takes you to list of conversations
                 break;
 
             case R.id.busy:
                 //block incoming messages.
+                //not yet implimented
                 break;
 
             case R.id.Settings: //takes you to settings window
+                //settings window exists and contains objects but does not work functionally
                 startActivity(new Intent(HomePage.this, Settings.class));
                 break;
         }
 
-
     }
-
-//    private class listAdapter extends ArrayAdapter<String> {
-//
-//        private int layout;
-//        private listAdapter(Context context, int resource, List<String> objects){
-//            super(context, resource, objects);
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent){
-//
-//            ViewFolder mainViewFolder = null;
-//            if(convertView==null){
-//                LayoutInflater inflater = LayoutInflater.from(getContext());
-//                convertView = inflater.inflate(layout, parent, false);
-//                ViewFolder viewfolder = new ViewFolder();
-//                viewfolder.thumbnail = (ImageView) convertView.findViewById(R.id.item_thumbnail);
-//                viewfolder.title = (TextView) convertView.findViewById(R.id.itemtext);
-//                viewfolder.butt = (Button) convertView.findViewById(R.id.talk);
-//
-//                viewfolder.butt.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        startActivity(new Intent(MainActivity.this, messageList.class));
-//                    }
-//                });
-//
-//            }
-//            else{
-//                mainViewFolder = (ViewFolder) convertView.getTag();
-//                mainViewFolder.title.setText(getItem(position));
-//
-//            }
-//            return super.getView(position, convertView, parent);
-//        }
-//    }
-//
-//
-//    public class ViewFolder{
-//        ImageView thumbnail;
-//        TextView title;
-//        Button butt;
-//
-//    }
-
-}
-
+    }
 
