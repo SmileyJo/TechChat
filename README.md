@@ -8,7 +8,7 @@ TO VIEW CONTACTS you can simply select "phonebook" to veiw people. Or you can lo
 
 TO GO INTO BLOCK MODE select "block" from the menu buttons and it will automaticly give anyone who messages you an auto-response so you can study undisturbed.  
 
-TO ADJUST BLOCK MODE SETTINGS "settings" to alter your message count before deletion, impliment an auto-response for when you are in block mode.  
+TO ADJUST BLOCK MODE SETTINGS "settings" to alter your message count before deletion, implement an auto-response for when you are in block mode.  
 
 Server Maininence Stuff:
 Comminutactions between client and server are done through a socket.  The client will send a command from the predefined language of
